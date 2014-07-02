@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Webfauna</string>
+    <string-array name="menu_array">
+        <item>Add</item>
+        <item>Observations</item>
+        <item>Offline Map</item>
+        <item>Preferences</item>
+        <item>About</item>
+    </string-array>
+    <string name="access_menu_drawer_open">Open navigation drawer</string>
+    <string name="access_menu_drawer_close">Close navigation drawer</string>
+
+</resources>
