@@ -12,4 +12,33 @@
     <string name="access_menu_drawer_open">Open navigation drawer</string>
     <string name="access_menu_drawer_close">Close navigation drawer</string>
 
+
+    <!-- Observation -->
+    <string name="observation_date_section_title">Date</string>
+    <string name="observation_date_title">Date</string>
+
+    <string name="observation_location_section_title">Location</string>
+    <string name="observation_location_title">Location</string>
+
+    <string name="observation_files_section_title">Files</string>
+    <string name="observation_images_title">Images</string>
+
+    <string name="observation_species_section_title">Species</string>
+    <string name="observation_group_title">Group</string>
+    <string name="observation_species_title">Species</string>
+    <string name="observation_observation_method_title">Observation Method</string>
+    <string name="observation_abundance_title">Abundance</string>
+
+    <string name="observation_environment_section_title">Environment</string>
+    <string name="observation_environment_title">Environment</string>
+    <string name="observation_milieu_title">Milieu</string>
+    <string name="observation_structure_title">Structure</string>
+    <string name="observation_substrat_title">Substrat</string>
+
+    <string name="location_dialog_title">Location</string>
+    <string name="location_lieudit_title">Lieudit</string>
+    <string name="location_precision_title">Precision</string>
+    <string name="location_altitude_title">Altitude</string>
+
+    <string name="files_dialog_title">Files</string>
 </resources>

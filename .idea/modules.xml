@@ -5,7 +5,9 @@
       <module fileurl="file://$PROJECT_DIR$/webfauna-mobile/webfauna-mobile.iml" filepath="$PROJECT_DIR$/webfauna-mobile/webfauna-mobile.iml" />
       <module fileurl="file://$PROJECT_DIR$/webfauna-mobile-it/webfauna-mobile-it.iml" filepath="$PROJECT_DIR$/webfauna-mobile-it/webfauna-mobile-it.iml" />
       <module fileurl="file://$PROJECT_DIR$/webfauna-mobile-parent.iml" filepath="$PROJECT_DIR$/webfauna-mobile-parent.iml" />
-      <module fileurl="file://$PROJECT_DIR$/webfauna-mobile/gen-external-apklibs/~apklib-com.actionbarsherlock_actionbarsherlock_4.4.0.iml" filepath="$PROJECT_DIR$/webfauna-mobile/gen-external-apklibs/~apklib-com.actionbarsherlock_actionbarsherlock_4.4.0.iml" />
+      <module fileurl="file://$PROJECT_DIR$/webfauna-mobile/gen-external-apklibs/~apklib-ch.leafit.gdc_general-data-capturing-lib_1.0-SNAPSHOT.iml" filepath="$PROJECT_DIR$/webfauna-mobile/gen-external-apklibs/~apklib-ch.leafit.gdc_general-data-capturing-lib_1.0-SNAPSHOT.iml" />
+      <module fileurl="file://$PROJECT_DIR$/webfauna-mobile/gen-external-apklibs/~apklib-ch.leafit.iac_inter-activity-communication-lib_1.0-SNAPSHOT.iml" filepath="$PROJECT_DIR$/webfauna-mobile/gen-external-apklibs/~apklib-ch.leafit.iac_inter-activity-communication-lib_1.0-SNAPSHOT.iml" />
+      <module fileurl="file://$PROJECT_DIR$/webfauna-mobile/gen-external-apklibs/~apklib-ch.leafit.ul_universal-list-library_1.0-SNAPSHOT.iml" filepath="$PROJECT_DIR$/webfauna-mobile/gen-external-apklibs/~apklib-ch.leafit.ul_universal-list-library_1.0-SNAPSHOT.iml" />
     </modules>
   </component>
 </project>
