@@ -2,9 +2,8 @@ package ch.leafit.webfauna.config;
 
 import android.graphics.Color;
 import ch.leafit.gdc.GDCDefaultStyleConfig;
-import ch.leafit.webfauna.gdc.*;
+import ch.leafit.webfauna.gdc.styles.*;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -46,6 +45,13 @@ public final class Config {
     public static final String webfaunaStructureRealmRestID = "TSP";
     public static final String webfaunaSubstratRealmRestID = "SBT";
 
+    /*GPS Settings*/
+    // The minimum distance to change Updates in meters
+    public static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
+
+    // The minimum time between updates in milliseconds
+    public static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
+
     /**
      * defines which WebfaunaGroups are to be downloaded
      */
@@ -53,11 +59,11 @@ public final class Config {
 
     public static class NeededWebfaunaGroup {
         public String groupRestID;
-        public String localImageName;
+        public int localImageResId;
 
-        public NeededWebfaunaGroup(String groupRestID,String localImageName) {
+        public NeededWebfaunaGroup(String groupRestID,int localImageResId) {
             this.groupRestID = groupRestID;
-            this.localImageName = localImageName;
+            this.localImageResId = localImageResId;
         }
     }
 
@@ -101,17 +107,17 @@ public final class Config {
 
         neededWebfaunaGroups = new ArrayList<NeededWebfaunaGroup>();
         /*Mammifières*/
-        neededWebfaunaGroups.add(new NeededWebfaunaGroup("4","mammifere.jpg"));
+        neededWebfaunaGroups.add(new NeededWebfaunaGroup("4",-1));
         /*Amphibiens*/
-        neededWebfaunaGroups.add(new NeededWebfaunaGroup("2","amphibien.jpg"));
+        neededWebfaunaGroups.add(new NeededWebfaunaGroup("2",-1));
         /*Reptiles*/
-        neededWebfaunaGroups.add(new NeededWebfaunaGroup("3","reptile.jpg"));
+        neededWebfaunaGroups.add(new NeededWebfaunaGroup("3",-1));
         /*Libellules*/
-        neededWebfaunaGroups.add(new NeededWebfaunaGroup("22","odo.jpg"));
+        neededWebfaunaGroups.add(new NeededWebfaunaGroup("22",-1));
         /*Orthoptères*/
-        neededWebfaunaGroups.add(new NeededWebfaunaGroup("23","ortho.jpg"));
+        neededWebfaunaGroups.add(new NeededWebfaunaGroup("23",-1));
         /*Lépidoptères*/
-        neededWebfaunaGroups.add(new NeededWebfaunaGroup("30","pap.jpg"));
+        neededWebfaunaGroups.add(new NeededWebfaunaGroup("30",-1));
     }
 
     public static void init() {

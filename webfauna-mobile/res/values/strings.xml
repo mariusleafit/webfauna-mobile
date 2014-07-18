@@ -12,8 +12,31 @@
     <string name="access_menu_drawer_open">Open navigation drawer</string>
     <string name="access_menu_drawer_close">Close navigation drawer</string>
 
+    <string name="retry">retry</string>
+    <string name="save">Save</string>
+    <string name="remove">Remove</string>
+    <string name="upload">Upload</string>
+    <string name="settings">Settings</string>
+
+
+    <!--GPS-->
+    <string name="gps_disabled_dialog_title">GPS is disabled</string>
+    <string name="gps_disabled_dialog_message">GPS is not enabled. Do you want to go to settings menu?</string>
+
+    <string name="coordinate_field_ch03">CH03</string>
+    <string name="coordinate_field_wgs">WGS84</string>
 
     <!-- Observation -->
+    <string name="observation_download_progress_dialog_title">Updating..</string>
+    <string name="observation_download_progress_dialog_message">Updating webfauna data..</string>
+
+    <string name="observation_cancel_areyousure_dialog_title">Dismiss Observation?</string>
+    <string name="observation_cancel_areyousure_dialog_positive_button">Yes</string>
+    <string name="observation_cancel_areyousure_dialog_negative_button">No</string>
+
+    <string name="observation_validation_dialog_title">Observation invalid</string>
+
+
     <string name="observation_date_section_title">Date</string>
     <string name="observation_date_title">Date</string>
 
@@ -37,8 +60,42 @@
 
     <string name="location_dialog_title">Location</string>
     <string name="location_lieudit_title">Lieudit</string>
+    <string name="location_coordinates_title">Coordinates</string>
     <string name="location_precision_title">Precision</string>
     <string name="location_altitude_title">Altitude</string>
 
     <string name="files_dialog_title">Files</string>
+
+    <string name="location_validation_precision_null">precision is mandatory</string>
+    <string name="location_validation_lieudit_null">lieudit is mandatory</string>
+    <string name="location_validation_lieudit_tolong">lieudit to long (max. 60 characters)</string>
+    <string name="location_validation_altitude_invalid">altitude must be at least 0m and lower than 5000m </string>
+    <string name="location_validation_coordinates_null">coordinates are mandatory</string>
+
+    <string name="observation_validation_date_null">date is mandatory</string>
+    <string name="observation_validation_date_invalid">date has to be between 1900 and the present</string>
+    <string name="observation_validation_location_null">location is mandatory</string>
+    <string name="observation_validation_group_null">group is mandatory</string>
+    <string name="observation_validation_species_null">species is mandatory</string>
+    <string name="observation_validation_identificationmethod_null">identification method is mandatory</string>
+
+    <string name="abundance_dialog_title">Abundance</string>
+    <string name="abundance_individuals_title">Individuals</string>
+    <string name="abundance_males_title"># of Males</string>
+    <string name="abundance_females_title"># of Females</string>
+    <string name="abundance_eggs_title"># of Eggs</string>
+    <string name="abundance_larves_title"># of Larves</string>
+    <string name="abundance_youngs_title"># of Youngs</string>
+    <string name="abundance_nymphs_title"># of Nymphs</string>
+    <string name="abundance_subadults_title"># of Subadults</string>
+    <string name="abundance_couples_title"># of Couples</string>
+
+    <!--Observation list-->
+    <string name="observation_list_areyousure_delete_dialog_message">Delete the selected Observations?</string>
+    <string name="observation_list_areyousure_dialog_positive_button">Yes</string>
+    <string name="observation_list_areyousure_dialog_negative_button">No</string>
+
+    <string name="observation_list_upload_progress_dialog_title">Uploading..</string>
+    <string name="observation_list_upload_progress_dialog_message">Uploading Observations..</string>
+    <string name="observation_list_upload_error_dialog_message">The remaining observations couln\'t be uploaded, please retry!</string>
 </resources>

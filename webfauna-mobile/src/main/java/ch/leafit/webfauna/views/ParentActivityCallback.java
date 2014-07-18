@@ -1,6 +1,7 @@
 package ch.leafit.webfauna.views;
 
 import android.support.v4.app.Fragment;
+import ch.leafit.webfauna.models.WebfaunaObservation;
 
 /**
  * Created by marius on 08/07/14.
@@ -17,6 +18,8 @@ public interface ParentActivityCallback {
     public void unlockSideMenu();
 
     public void showObservationListFragment();
+
+    public void showObservationFragmentForEditting(WebfaunaObservation observation);
 
     /**
      * can be used by the fragments to communicate with other fragments

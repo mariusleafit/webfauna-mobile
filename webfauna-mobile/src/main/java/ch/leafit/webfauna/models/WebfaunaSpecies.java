@@ -1,6 +1,9 @@
 package ch.leafit.webfauna.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
+import ch.leafit.ul.list_items.ULListItemDataModel;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,7 +15,7 @@ import java.util.Iterator;
 /**
  * Created by marius on 09/07/14.
  */
-public class WebfaunaSpecies extends WebfaunaBaseModel {
+public class WebfaunaSpecies extends WebfaunaBaseModel implements ULListItemDataModel {
 
     private String mRestID;
     private String mGroupRestID;
@@ -23,10 +26,31 @@ public class WebfaunaSpecies extends WebfaunaBaseModel {
     private String mSubSpecies;
 
 
-    public WebfaunaSpecies(JSONObject jsonObject, String groupRestID) {
+    public WebfaunaSpecies(JSONObject jsonObject, String groupRestID) throws Exception{
         super(jsonObject);
         putJSON(jsonObject);
         mGroupRestID = groupRestID;
+    }
+
+    public WebfaunaSpecies(WebfaunaSpecies toCopy) {
+        if(toCopy == null)
+            toCopy = new WebfaunaSpecies();
+
+        mRestID = toCopy.mRestID;
+        mGroupRestID = toCopy.mGroupRestID;
+        mFamily = toCopy.mFamily;
+        mGenus = toCopy.mGenus;
+        mSpecies = toCopy.mSpecies;
+        mVernacularNames = new HashMap<String, String>(toCopy.mVernacularNames);
+        mSubSpecies = toCopy.mSubSpecies;
+    }
+
+    public WebfaunaSpecies() {
+
+    }
+
+    public WebfaunaSpecies(Parcel in) {
+        readFromParcel(in);
     }
 
     public String getTitle(String twoLetterIsoLng) {
@@ -78,7 +102,7 @@ public class WebfaunaSpecies extends WebfaunaBaseModel {
 
 
     @Override
-    public void putJSON(JSONObject jsonObject) {
+    public void putJSON(JSONObject jsonObject) throws Exception{
         try {
             mRestID = jsonObject.getString("REST-ID");
             if(jsonObject.has("family"))
@@ -106,13 +130,16 @@ public class WebfaunaSpecies extends WebfaunaBaseModel {
                 }
             }
 
-        } catch (JSONException e) {
+        }  catch (JSONException e) {
+            Log.e("Species - putJSON: ", "JSON", e);
+        } catch (Exception e) {
             Log.e("WebfaunaSpecies - putJSON: ","JSON", e);
+            throw e;
         }
     }
 
     @Override
-    public JSONObject toJSON() {
+    public JSONObject toJSON() throws Exception{
         JSONObject jsonObject = new JSONObject();
 
         try {
@@ -129,8 +156,68 @@ public class WebfaunaSpecies extends WebfaunaBaseModel {
             jsonObject.put("vernacularNames",jsonVernacularNames);
         } catch (Exception e) {
             Log.e("WebfaunaSpecies - toJSON: ", "JSON", e);
+            throw e;
         }
 
         return jsonObject;
     }
+
+    /*
+    ULListItemDataModel
+     */
+
+    @Override
+    public String getTitle() {
+        return getTitle("en");
+    }
+
+    @Override
+    public String getSubtitle() {
+        return "";
+    }
+
+    @Override
+    public int getImageResId() {
+        return 0;
+    }
+
+    /*
+     Parcelable
+     */
+    public static final Parcelable.Creator<WebfaunaSpecies> CREATOR = new Parcelable.Creator<WebfaunaSpecies>() {
+        public WebfaunaSpecies createFromParcel(Parcel in ) {
+            return new WebfaunaSpecies(in);
+        }
+
+        public WebfaunaSpecies[] newArray(int size) {
+            return new WebfaunaSpecies[size];
+        }
+    };
+
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mRestID);
+        dest.writeString(mFamily);
+        dest.writeString(mGenus);
+        dest.writeString(mSpecies);
+        dest.writeSerializable(mVernacularNames);
+        dest.writeString(mSubSpecies);
+    }
+
+    private void readFromParcel(Parcel in) {
+        mRestID = in.readString();
+        mFamily = in.readString();
+        mGenus = in.readString();
+        mSpecies = in.readString();
+        try {
+            mVernacularNames = (HashMap<String,String>)in.readSerializable();
+        } catch (Exception e) {
+            Log.e("WebfaunaGroup","readFromParcel",e);
+        }
+        mSubSpecies = in.readString();
+    }
+
+    public int describeContents() {
+        return 0;
+    }
+
 }

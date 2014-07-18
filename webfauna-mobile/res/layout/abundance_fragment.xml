@@ -3,10 +3,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="wrap_content"
-              android:layout_height="wrap_content">
+              android:layout_height="300dp">
     <ListView xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="fill_parent"
-              android:layout_height="250dp"
+              android:layout_height="300dp"
               android:id="@+id/lstMain"
               android:descendantFocusability="afterDescendants">
 

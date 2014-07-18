@@ -1,5 +1,6 @@
 package ch.leafit.webfauna.models;
 
+import android.content.res.Resources;
 import android.util.Log;
 import ch.leafit.webfauna.config.Config;
 import ch.leafit.webfauna.data.DataDispatcher;
@@ -9,15 +10,22 @@ import org.json.JSONObject;
 /**
  * Created by marius on 09/07/14.
  */
-public class WebfaunaSource extends WebfaunaBaseModel {
+public class WebfaunaSource extends WebfaunaBaseModel implements WebfaunaValidatable {
 
     private String mAppCode;
 
     public WebfaunaSource(){super();}
 
-    public WebfaunaSource(JSONObject jsonObject) {
+    public WebfaunaSource(JSONObject jsonObject) throws Exception{
         super(jsonObject);
         putJSON(jsonObject);
+    }
+
+    public WebfaunaSource(WebfaunaSource toCopy) {
+        if(toCopy == null) {
+            toCopy = new WebfaunaSource();
+        }
+        mAppCode = toCopy.mAppCode;
     }
 
     /*static instance*/
@@ -36,24 +44,38 @@ public class WebfaunaSource extends WebfaunaBaseModel {
     }
 
     @Override
-    public void putJSON(JSONObject jsonObject) {
+    public void putJSON(JSONObject jsonObject) throws Exception{
         try {
             mAppCode = jsonObject.getString("appCode");
-        } catch (JSONException e) {
+        }  catch (JSONException e) {
+            Log.e("Source - putJSON: ", "JSON", e);
+        } catch (Exception e) {
             Log.e("WebfaunaEnvironment - putJSON: ", "JSON", e);
+            throw e;
         }
     }
 
     @Override
-    public JSONObject toJSON() {
+    public JSONObject toJSON() throws Exception{
         JSONObject jsonObject = new JSONObject();
 
         try {
             jsonObject.put("appCode", mAppCode);
-        } catch (JSONException e) {
+        } catch (Exception e) {
             Log.e("WebfaunaSource - toJSON: ", "JSON", e);
+            throw e;
         }
 
         return jsonObject;
+    }
+
+    /*
+    WebfaunaValidatable
+     */
+
+    @Override
+    public WebfaunaValidationResult getValidationResult(Resources res) {
+        WebfaunaValidationResult validationResult = new WebfaunaValidationResult(true,"");
+        return validationResult;
     }
 }

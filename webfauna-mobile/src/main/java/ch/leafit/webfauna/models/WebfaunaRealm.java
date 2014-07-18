@@ -21,9 +21,28 @@ public class WebfaunaRealm extends WebfaunaBaseModel {
     /*not from json*/
     private ArrayList<WebfaunaRealmValue> mRealmValues;
 
-    public WebfaunaRealm(JSONObject jsonObject) {
+    public WebfaunaRealm(JSONObject jsonObject) throws Exception {
         super(jsonObject);
         putJSON(jsonObject);
+    }
+
+    public WebfaunaRealm(WebfaunaRealm toCopy) {
+        if(toCopy == null) {
+            toCopy = new WebfaunaRealm();
+        }
+
+        mRestID = toCopy.mRestID;
+        mDesignation = toCopy.mDesignation;
+        mDefaultLanguage = toCopy.mDefaultLanguage;
+
+        mRealmValues = new ArrayList<WebfaunaRealmValue>();
+        for(WebfaunaRealmValue realmValueToCopy : toCopy.mRealmValues) {
+            mRealmValues.add(new WebfaunaRealmValue(realmValueToCopy));
+        }
+    }
+
+    public WebfaunaRealm() {
+        mRealmValues = new ArrayList<WebfaunaRealmValue>();
     }
 
     public String getRestID() {
@@ -48,9 +67,9 @@ public class WebfaunaRealm extends WebfaunaBaseModel {
 
     public WebfaunaRealmValue getRealmValue(String restID) {
         WebfaunaRealmValue returnRealmValue = null;
-        if(restID != null && restID != "" && mRealmValues != null) {
+        if(restID != null && !restID.equals("") && mRealmValues != null) {
             for(WebfaunaRealmValue realmValue : mRealmValues) {
-                if(realmValue.getRestID() == restID) {
+                if(realmValue.getRestID().equals(restID)) {
                     returnRealmValue = realmValue;
                     break;
                 }
@@ -67,26 +86,30 @@ public class WebfaunaRealm extends WebfaunaBaseModel {
     }
 
     @Override
-    public void putJSON(JSONObject jsonObject) {
+    public void putJSON(JSONObject jsonObject) throws Exception{
         try {
             mRestID = jsonObject.getString("REST-ID");
             mDesignation = jsonObject.getString("designation");
             mDefaultLanguage = jsonObject.getString("defaultLanguage");
-        } catch (JSONException e) {
+        }  catch (JSONException e) {
+            Log.e("Realm - putJSON: ", "JSON", e);
+        } catch (Exception e) {
             Log.e("WebfaunaRealm - putJSON: ","JSON", e);
+            throw e;
         }
     }
 
     @Override
-    public JSONObject toJSON() {
+    public JSONObject toJSON()  throws Exception{
         JSONObject jsonObject = new JSONObject();
 
         try {
             jsonObject.put("REST-ID", mRestID);
             jsonObject.put("designation",mDesignation);
             jsonObject.put("defaultLanguage",mDefaultLanguage);
-        } catch (JSONException e) {
+        } catch (Exception e) {
             Log.e("WebfaunaRealm - toJSON: ", "JSON", e);
+            throw e;
         }
 
         return jsonObject;

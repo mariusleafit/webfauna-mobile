@@ -1,4 +1,4 @@
-package ch.leafit.webfauna.gdc;
+package ch.leafit.webfauna.gdc.styles;
 
 import android.graphics.Color;
 import ch.leafit.gdc.GDCSectionTitleDataField;

@@ -1,26 +1,43 @@
 package ch.leafit.webfauna.data;
 
-import ch.leafit.webfauna.models.WebfaunaGroup;
-import ch.leafit.webfauna.models.WebfaunaRealm;
-import ch.leafit.webfauna.models.WebfaunaSpecies;
+import android.content.Context;
+import ch.leafit.webfauna.config.Config;
+import ch.leafit.webfauna.data.db.DBManager;
+import ch.leafit.webfauna.data.db.ModelMapper;
+import ch.leafit.webfauna.data.db.models.*;
+import ch.leafit.webfauna.models.*;
 import ch.leafit.webfauna.webservice.GetSystematicsAsyncTask;
 import ch.leafit.webfauna.webservice.GetThesaurusAsyncTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
+import java.util.List;
 /**
  * Created by marius on 09/07/14.
  *
  * Central point for data interaction
  */
-public class DataDispatcher implements GetSystematicsAsyncTask.Callback, GetThesaurusAsyncTask.Callback{
+public final class DataDispatcher implements GetSystematicsAsyncTask.Callback, GetThesaurusAsyncTask.Callback{
+
+    private static Context sContext;
+
+    /**
+     * has to be called once in runtime before first usage (by WebfaunaApplication class)
+     * @param context
+     */
+    public static void setContext(Context context) {
+        sContext = context;
+    }
+
+    private DBManager dbManager;
 
     public DataDispatcher() {
         mSubscribers = new ArrayList<DataDispatcherBroadcastSubscriber>();
 
         mWebfaunaGroups = new ArrayList<WebfaunaGroup>();
         mWebfaunaSpeciesOfGroups = new HashMap<String, ArrayList<WebfaunaSpecies>>();
+
+        dbManager = new DBManager(sContext);
     }
 
     /*
@@ -61,15 +78,20 @@ public class DataDispatcher implements GetSystematicsAsyncTask.Callback, GetThes
             getThesaurusFromDB();
 
             if(!isInitialized()/* & internet connection???*/) {
-                if(!isSystematicsInitialized()) {
-                    updateSystematicsFromWebservice();
+                if(true/*internet connection*/) {
+                    if (!isSystematicsInitialized()) {
+                        updateSystematicsFromWebservice();
+                    }
+                    if (!isThesaurusInitialized()) {
+                        updateThesaurusFromWebservice();
+                    }
+                } else {
+                    informSubscribersAboutSystematicsUpdateError(null);
+                    informSubscribersAboutThesaurusUpdateError(null);
                 }
-                if(!isThesaurusInitialized()) {
-                    updateThesaurusFromWebservice();
-                }
-            } else if(false /*no internet connection*/) {
-                informSubscribersAboutSystematicsUpdateError(null);
-                informSubscribersAboutThesaurusUpdateError(null);
+            } else {
+                informSubscribersAboutSystematicsChange();
+                informSubscribersAboutThesaurusChange();
             }
         }
     }
@@ -128,9 +150,58 @@ public class DataDispatcher implements GetSystematicsAsyncTask.Callback, GetThes
     Observations
      */
 
+    public ArrayList<WebfaunaObservation> getObservations() {
+        ArrayList<WebfaunaObservation> webfaunaObservations = new ArrayList<WebfaunaObservation>();
+
+        List<DBObservation> dbObservations = dbManager.getObservations();
+        for(DBObservation dbObservation: dbObservations) {
+            WebfaunaObservation webfaunaObservation = ModelMapper.getWebfaunaObservation(dbObservation);
+            if(webfaunaObservation != null) {
+                webfaunaObservations.add(webfaunaObservation);
+            }
+        }
+        return webfaunaObservations;
+    }
+
+    public WebfaunaObservation getObservation(String guid) {
+        WebfaunaObservation returnObservation = null;
+
+        DBObservation dbObservation = dbManager.getObservation(guid);
+        if(dbObservation != null) {
+            returnObservation = ModelMapper.getWebfaunaObservation(dbObservation);
+        }
+
+        return returnObservation;
+    }
+
+    public void addObservation(WebfaunaObservation observation) {
+        DBObservation dbObservation = ModelMapper.getDBObservation(observation);
+        if(dbObservation != null) {
+            dbManager.createObservation(dbObservation);
+        }
+    }
+
+    public void editObservation(WebfaunaObservation observation) {
+        if(observation.getGUID() != null) {
+            DBObservation dbObservation = ModelMapper.getDBObservation(observation);
+            if(dbObservation != null) {
+                dbManager.editObservation(dbObservation);
+            }
+        } else {
+            addObservation(observation);
+        }
+    }
+
+    public void deleteObservation(String guid) {
+        dbManager.deleteObservation(guid);
+    }
+
     /*
     Thesaurus
      */
+
+    private GetThesaurusAsyncTask getThesaurusAsyncTask;
+
     private WebfaunaRealm mIdentificationMethodRealm;
     private WebfaunaRealm mPrecisionRealm;
     private WebfaunaRealm mEnvironmentRealm;
@@ -177,12 +248,75 @@ public class DataDispatcher implements GetSystematicsAsyncTask.Callback, GetThes
 
     /*get data*/
     public void updateThesaurusFromWebservice() {
-        GetThesaurusAsyncTask asyncTask = new GetThesaurusAsyncTask(this,"en");
-        asyncTask.execute();
+        /*to avoid multiple executen at the same time*/
+        if(getThesaurusAsyncTask == null) {
+            getThesaurusAsyncTask = new GetThesaurusAsyncTask(this,"en");
+            getThesaurusAsyncTask.execute();
+        }
     }
 
     private void getThesaurusFromDB() {
 
+        /*get all realms & their values*/
+
+        List<DBRealm> dbRealms = dbManager.getRealms();
+        for(DBRealm dbRealm: dbRealms) {
+            WebfaunaRealm webfaunaRealm = ModelMapper.getWebfaunaRealm(dbRealm);
+            if(webfaunaRealm != null) {
+                /*get realmvalues*/
+
+                List<DBRealmValue> dbRealmValues = dbManager.getRealmValues(webfaunaRealm.getRestID());
+                for(DBRealmValue dbRealmValue: dbRealmValues) {
+                    WebfaunaRealmValue webfaunaRealmValue = ModelMapper.getWebfaunaRealmValue(dbRealmValue);
+                    if(webfaunaRealmValue != null) {
+                        webfaunaRealm.addRealmValue(webfaunaRealmValue);
+                    }
+                }
+
+                /*save realm at the right place!!*/
+                if(webfaunaRealm.getRestID().equals(Config.webfaunaIdentificationMethodRealmRestID)) {
+                    mIdentificationMethodRealm = webfaunaRealm;
+                } else if(webfaunaRealm.getRestID().equals(Config.webfaunaPrecisionRealmRestID)) {
+                    mPrecisionRealm = webfaunaRealm;
+                } else if(webfaunaRealm.getRestID().equals(Config.webfaunaEnvironmentRealmRestID)) {
+                    mEnvironmentRealm = webfaunaRealm;
+                } else if(webfaunaRealm.getRestID().equals(Config.webfaunaMilieuRealmRestID)) {
+                    mMilieuRealm = webfaunaRealm;
+                } else if(webfaunaRealm.getRestID().equals(Config.webfaunaStructureRealmRestID)) {
+                    mStructureRealm = webfaunaRealm;
+                } else if(webfaunaRealm.getRestID().equals(Config.webfaunaSubstratRealmRestID)) {
+                    mSubstratRealm = webfaunaRealm;
+                }
+            }
+        }
+    }
+
+    private void stockThesaurusInDB() {
+        dbManager.deleteAllRealms();
+        dbManager.deleteAllRealmValues();
+
+        stockRealmInDB(mIdentificationMethodRealm);
+        stockRealmInDB(mPrecisionRealm);
+        stockRealmInDB(mEnvironmentRealm);
+        stockRealmInDB(mMilieuRealm);
+        stockRealmInDB(mStructureRealm);
+        stockRealmInDB(mSubstratRealm);
+    }
+
+    private void stockRealmInDB(WebfaunaRealm webfaunaRealm) {
+        //stock realm
+        DBRealm dbRealm = ModelMapper.getDBRealm(webfaunaRealm);
+        if(dbRealm != null) {
+            dbManager.createRealm(dbRealm);
+
+            //stock realmvalues
+            for(WebfaunaRealmValue webfaunaRealmValue: webfaunaRealm.getRealmValues()) {
+                DBRealmValue dbRealmValue = ModelMapper.getDBRealmValue(webfaunaRealmValue, webfaunaRealm.getRestID());
+                if(dbRealmValue != null) {
+                    dbManager.createRealmValue(dbRealmValue);
+                }
+            }
+        }
     }
 
     /*GetThesaurusAsyncTask.Callback*/
@@ -198,17 +332,28 @@ public class DataDispatcher implements GetSystematicsAsyncTask.Callback, GetThes
         mStructureRealm = structureRealm;
         mSubstratRealm = substratRealm;
 
+        /*enable reexecution of task*/
+        getThesaurusAsyncTask = null;
+
+        stockThesaurusInDB();
+
         informSubscribersAboutThesaurusChange();
     }
 
     @Override
     public void couldNotGetThesaurus(Exception ex) {
+        /*enable reexecution of task*/
+        getThesaurusAsyncTask = null;
+
         informSubscribersAboutThesaurusUpdateError(ex);
     }
 
     /*
-            Systematics
-             */
+    Systematics
+     */
+
+    private GetSystematicsAsyncTask getSystematicsAsyncTask;
+
     private ArrayList<WebfaunaGroup> mWebfaunaGroups;
     /**
      * key: webfauna.restID
@@ -222,9 +367,9 @@ public class DataDispatcher implements GetSystematicsAsyncTask.Callback, GetThes
     public WebfaunaGroup getWebfaunaGroup(String groupRestID) {
         WebfaunaGroup returnObject = null;
 
-        if(groupRestID != null && groupRestID != "") {
+        if(groupRestID != null && !groupRestID.equals("")) {
             for (WebfaunaGroup webfaunaGroup : mWebfaunaGroups) {
-                if (webfaunaGroup.getRestID() == groupRestID) {
+                if (webfaunaGroup.getRestID().equals(groupRestID)) {
                     returnObject = webfaunaGroup;
                     break;
                 }
@@ -237,7 +382,7 @@ public class DataDispatcher implements GetSystematicsAsyncTask.Callback, GetThes
     public ArrayList<WebfaunaSpecies> getSpecies(String groupRestID) {
         ArrayList<WebfaunaSpecies> returnSpecies = null;
 
-        if(groupRestID != null && groupRestID != "") {
+        if(groupRestID != null && !groupRestID.equals("")) {
             if (mWebfaunaSpeciesOfGroups.containsKey(groupRestID)) {
                 returnSpecies = mWebfaunaSpeciesOfGroups.get(groupRestID);
             }
@@ -248,11 +393,11 @@ public class DataDispatcher implements GetSystematicsAsyncTask.Callback, GetThes
     public WebfaunaSpecies getSpecies(String groupRestID, String speciesRestID) {
         WebfaunaSpecies returnSpecies = null;
 
-        if(groupRestID != null && groupRestID != "" && speciesRestID != null && speciesRestID != "") {
+        if(groupRestID != null && !groupRestID.equals("") && speciesRestID != null && !speciesRestID.equals("")) {
             ArrayList<WebfaunaSpecies> webfaunaSpeciesesArray = getSpecies(groupRestID);
             if(webfaunaSpeciesesArray != null){
                 for(WebfaunaSpecies webfaunaSpecies:webfaunaSpeciesesArray) {
-                    if(webfaunaSpecies.getRestID() == speciesRestID) {
+                    if(webfaunaSpecies.getRestID().equals(speciesRestID)) {
                         returnSpecies = webfaunaSpecies;
                         break;
                     }
@@ -265,12 +410,58 @@ public class DataDispatcher implements GetSystematicsAsyncTask.Callback, GetThes
 
     /*get data*/
     public void updateSystematicsFromWebservice() {
-        GetSystematicsAsyncTask asyncTask = new GetSystematicsAsyncTask(this);
-        asyncTask.execute();
+        /*avoid multiple execution at the same time*/
+        if(getSystematicsAsyncTask == null) {
+            getSystematicsAsyncTask = new GetSystematicsAsyncTask(this);
+            getSystematicsAsyncTask.execute();
+        }
     }
 
     private void getSystematicsFromDB() {
+        mWebfaunaSpeciesOfGroups = new HashMap<String, ArrayList<WebfaunaSpecies>>();
+        mWebfaunaGroups = new ArrayList<WebfaunaGroup>();
 
+        List<DBGroup> dbGroups = dbManager.getGroups();
+        for(DBGroup dbGroup: dbGroups) {
+            WebfaunaGroup webfaunaGroup = ModelMapper.getWebfaunaGroup(dbGroup);
+            if(webfaunaGroup != null) {
+                mWebfaunaGroups.add(webfaunaGroup);
+
+                //get species of group
+                List<DBSpecies> dbSpecieses = dbManager.getSpecies(webfaunaGroup.getRestID());
+
+                mWebfaunaSpeciesOfGroups.put(webfaunaGroup.getRestID(),new ArrayList<WebfaunaSpecies>());
+                for(DBSpecies dbSpecies : dbSpecieses) {
+                    WebfaunaSpecies webfaunaSpecies = ModelMapper.getWebfaunaSpecies(dbSpecies);
+                    if(webfaunaSpecies != null) {
+                        mWebfaunaSpeciesOfGroups.get(webfaunaGroup.getRestID()).add(webfaunaSpecies);
+                    }
+                }
+            }
+        }
+    }
+
+    private void stockSystematicsInDB() {
+        if(mWebfaunaGroups != null && mWebfaunaGroups.size() > 0 && mWebfaunaSpeciesOfGroups != null) {
+            dbManager.deleteAllGroups();
+            dbManager.deleteAllSpecies();
+
+            for(WebfaunaGroup webfaunaGroup: mWebfaunaGroups) {
+                DBGroup dbGroup = ModelMapper.getDBGroup(webfaunaGroup);
+                if(dbGroup != null) {
+                    dbManager.createGroup(dbGroup);
+                }
+            }
+
+            for(String groupRestID: mWebfaunaSpeciesOfGroups.keySet()) {
+                for(WebfaunaSpecies webfaunaSpecies: mWebfaunaSpeciesOfGroups.get(groupRestID)) {
+                    DBSpecies dbSpecies = ModelMapper.getDBSpecies(webfaunaSpecies);
+                    if(dbSpecies != null) {
+                        dbManager.createSpecies(dbSpecies);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -278,7 +469,7 @@ public class DataDispatcher implements GetSystematicsAsyncTask.Callback, GetThes
      * @return true if DataDispatcher contains Systematics-data / else false
      */
     public boolean isSystematicsInitialized() {
-        if(!(mWebfaunaGroups != null && mWebfaunaGroups.size() > 0)) {
+        if(mWebfaunaGroups == null || mWebfaunaGroups.size() == 0 || mWebfaunaSpeciesOfGroups == null || mWebfaunaSpeciesOfGroups.size() != mWebfaunaGroups.size()) {
             return false;
         } else {
             return true;
@@ -290,10 +481,19 @@ public class DataDispatcher implements GetSystematicsAsyncTask.Callback, GetThes
         mWebfaunaGroups = webfaunaGroups;
         mWebfaunaSpeciesOfGroups = speciesOfGroups;
 
+        /*enable reexecution of the task*/
+        getSystematicsAsyncTask = null;
+
+        stockSystematicsInDB();
+
         informSubscribersAboutSystematicsChange();
     }
 
     public void couldNotGetSystematics(Exception ex) {
+
+        /*enable reexecution of the task*/
+        getSystematicsAsyncTask = null;
+
         informSubscribersAboutSystematicsUpdateError(ex);
     }
 }

@@ -1,14 +1,19 @@
 package ch.leafit.webfauna.views;
 
 
+import android.app.*;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.app.*;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -17,6 +22,7 @@ import ch.leafit.webfauna.R;
 import ch.leafit.webfauna.config.Config;
 import ch.leafit.webfauna.data.DataDispatcher;
 import ch.leafit.webfauna.models.WebfaunaGroup;
+import ch.leafit.webfauna.models.WebfaunaObservation;
 import ch.leafit.webfauna.webservice.GetSystematicsAsyncTask;
 import ch.leafit.webfauna.webservice.WebfaunaWebserviceSystematics;
 
@@ -105,6 +111,11 @@ public class MainActivity extends FragmentActivity implements ParentActivityCall
         getActionBar().setBackgroundDrawable(new ColorDrawable(Config.actionBarColor));
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
+    }
+
     /* The click listner for ListView in the navigation drawer */
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
@@ -133,11 +144,9 @@ public class MainActivity extends FragmentActivity implements ParentActivityCall
                 tag = PreferencesFragment.TAG;
                 break;
             case MENU_ABOUT_POSITION:
-                DataDispatcher.getInstantce().initialize();
-                return;
-                //mCurrentFragment = new AboutFragment();
-                //tag = AboutFragment.TAG;
-                //break;
+                mCurrentFragment = new AboutFragment();
+                tag = AboutFragment.TAG;
+                break;
             default:
                 mCurrentFragment = null;
                 break;
@@ -222,7 +231,27 @@ public class MainActivity extends FragmentActivity implements ParentActivityCall
 
     @Override
     public void showObservationListFragment() {
-        selectMenuItem(MENU_OBSERVATIONS_POSITION);
+        mCurrentFragment = new ObservationListFragment();
+        String tag = ObservationListFragment.TAG;
+        if(mCurrentFragment != null) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, mCurrentFragment,tag).commit();
+        }
+    }
+
+    @Override
+    public void showObservationFragmentForEditting(WebfaunaObservation observation) {
+        try {
+            mCurrentFragment = new ObservationFragment(observation);
+            String tag = ObservationFragment.TAG;
+            if(mCurrentFragment != null) {
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.content_frame, mCurrentFragment,tag).commit();
+            }
+        } catch (CloneNotSupportedException e) {
+            Log.e("MainActivity", "showObservationFragmentForEditting", e);
+        }
+
     }
 
     @Override

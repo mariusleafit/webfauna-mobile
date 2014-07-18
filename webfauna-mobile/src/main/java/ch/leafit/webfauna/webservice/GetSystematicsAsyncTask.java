@@ -38,7 +38,7 @@ public class GetSystematicsAsyncTask extends AsyncTask<Void,Void,Void> {
             /*download group*/
             WebfaunaGroup webfaunaGroup = WebfaunaWebserviceSystematics.getGroupFromWebservice(neededWebfaunaGroup.groupRestID,outEx);
             if(outEx.getValue() == null && webfaunaGroup != null) {
-                webfaunaGroup.setLocalImageName(neededWebfaunaGroup.localImageName);
+                webfaunaGroup.setLocalImageResID(neededWebfaunaGroup.localImageResId);
                 mWebfaunaGroups.add(webfaunaGroup);
 
                 /*download species*/
