@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.spi.CalendarNameProvider;
 
@@ -38,6 +39,7 @@ public class WebfaunaObservation extends WebfaunaBaseModel implements WebfaunaVa
         mEnvironment = new WebfaunaEnvironment();
         mSource = WebfaunaSource.getConstSource();
         mObservationDate = new Date();
+        mGUID = UUID.randomUUID();
     }
 
     public WebfaunaObservation(JSONObject jsonObject) throws Exception{
@@ -51,6 +53,9 @@ public class WebfaunaObservation extends WebfaunaBaseModel implements WebfaunaVa
 
         if(mObservationDate == null)
             mObservationDate = new Date();
+
+        if(mGUID == null)
+            mGUID = UUID.randomUUID();
     }
 
     public WebfaunaObservation(WebfaunaObservation toCopy) {
@@ -218,7 +223,8 @@ public class WebfaunaObservation extends WebfaunaBaseModel implements WebfaunaVa
 
             /*seperate date*/
             Integer year = jsonObject.getInt("dateYear");
-            Integer month = jsonObject.getInt("dateMonth");
+            /*because the months in the super duper java date mess start with 0*/
+            Integer month = jsonObject.getInt("dateMonth") - 1;
             Integer date = jsonObject.getInt("dateDay");
 
 
@@ -252,7 +258,7 @@ public class WebfaunaObservation extends WebfaunaBaseModel implements WebfaunaVa
             jsonObject.put("identificationMethodCode", mIdentificationMethod.getRestID());
 
             /*seperate date*/
-            Calendar cal = Calendar.getInstance();
+            Calendar cal = Calendar.getInstance(Locale.GERMANY);
             cal.setTime(mObservationDate);
 
             jsonObject.put("dateDay", cal.get(Calendar.DAY_OF_MONTH));
@@ -352,7 +358,7 @@ public class WebfaunaObservation extends WebfaunaBaseModel implements WebfaunaVa
                 mTitle = observation.getWebfaunaSpecies().getTitle();
 
 
-                mSubtitle = DateFormat.format("dd-MM-yyyy hh:mm",observation.getObservationDate()).toString();
+                mSubtitle = DateFormat.format("dd-MM-yyyy",observation.getObservationDate()).toString();
             } else {
                 throw new Exception("Cannot create WebfaunaObservationULListDataModel: argument null");
             }

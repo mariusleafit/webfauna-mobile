@@ -2,5 +2,133 @@
 <resources>
 
     <string name="app_name">Webfauna</string>
+    <string-array name="menu_array">
+        <item>Ajouter</item>
+        <item>Observations</item>
+        <item>Carte hors-connexion</item>
+        <item>Préférences</item>
+        <item>A propos</item>
+    </string-array>
+    <string name="access_menu_drawer_open">Open navigation drawer</string>
+    <string name="access_menu_drawer_close">Close navigation drawer</string>
+
+    <string name="retry">Reéssayer</string>
+    <string name="save">Sauvegarder</string>
+    <string name="remove">Supprimer</string>
+    <string name="upload">Transférer</string>
+    <string name="settings">Préférences</string>
+
+
+    <!--GPS-->
+    <string name="gps_disabled_dialog_title">GPS est désactivé</string>
+    <string name="gps_disabled_dialog_message">PS est désactivé. Ouvrir Settings?</string>
+
+    <string name="coordinate_field_ch03">CH03</string>
+    <string name="coordinate_field_wgs">WGS84</string>
+
+    <!-- Observation -->
+    <string name="observation_download_progress_dialog_title">Chargement..</string>
+    <string name="observation_download_progress_dialog_message">Charger donnée webfauna..</string>
+
+    <string name="observation_cancel_areyousure_dialog_title">Annuler les changements?</string>
+    <string name="observation_cancel_areyousure_dialog_positive_button">Oui</string>
+    <string name="observation_cancel_areyousure_dialog_negative_button">Non</string>
+
+    <string name="observation_validation_dialog_title">Observation invalide</string>
+
+
+    <string name="observation_date_section_title">Date</string>
+    <string name="observation_date_title">Date</string>
+
+    <string name="observation_location_section_title">Localisation</string>
+    <string name="observation_location_title">Localisation</string>
+
+    <string name="observation_files_section_title">Fichiers</string>
+    <string name="observation_images_title">Fichiers</string>
+
+    <string name="observation_species_section_title">Groupe</string>
+    <string name="observation_group_title">Groupe</string>
+    <string name="observation_species_title">Espèce</string>
+    <string name="observation_observation_method_title">Méthode d’identification</string>
+    <string name="observation_abundance_title">Abondance</string>
+
+    <string name="observation_environment_section_title">Environnement</string>
+    <string name="observation_environment_title">Environnement</string>
+    <string name="observation_milieu_title">Type de milieu</string>
+    <string name="observation_structure_title">Structure</string>
+    <string name="observation_substrat_title">Substrat</string>
+
+    <string name="location_dialog_title">Localisation</string>
+    <string name="location_lieudit_title">Lieu-dit</string>
+    <string name="location_coordinates_title">Coordonnées X et Y</string>
+    <string name="location_precision_title">Précision</string>
+    <string name="location_altitude_title">Altitude (m)</string>
+
+    <string name="files_dialog_title">Fichiers</string>
+
+    <string name="location_validation_precision_null">Précision de la localisation obligatoire</string>
+    <string name="location_validation_lieudit_null">Lieu-dit obligatoire</string>
+    <string name="location_validation_lieudit_tolong">Lieu-dit obligatoire</string>
+    <string name="location_validation_altitude_invalid">L’altitude ne doit pas dépassée 5000 m</string>
+    <string name="location_validation_coordinates_null">Coordonnées obligatoire</string>
+
+    <string name="observation_validation_date_null">Date obligatoire</string>
+    <string name="observation_validation_date_invalid">Les données doivent être comprises entre janvier 1900 et aujourd‘hui</string>
+    <string name="observation_validation_location_null">Veuillez entrer la localisation</string>
+    <string name="observation_validation_group_null">Groupe obligatoire</string>
+    <string name="observation_validation_species_null">Espèce obligatoire</string>
+    <string name="observation_validation_identificationmethod_null">Méthode d’identification obligatoire</string>
+
+    <string name="abundance_dialog_title">Abondance</string>
+    <string name="abundance_individuals_title">Nombre d’individus</string>
+    <string name="abundance_males_title">Nombre de mâles</string>
+    <string name="abundance_females_title">Nombre de femelles</string>
+    <string name="abundance_eggs_title">Nombre d’œufs</string>
+    <string name="abundance_larves_title">Nombre de larves</string>
+    <string name="abundance_youngs_title">Nombre de jeunes</string>
+    <string name="abundance_nymphs_title">Nombre de nymphes</string>
+    <string name="abundance_subadults_title">Nombre de subadultes</string>
+    <string name="abundance_couples_title">Nombre de couples</string>
+
+    <!--Observation list-->
+    <string name="observation_list_areyousure_delete_dialog_message">Annuler les changements?</string>
+    <string name="observation_list_areyousure_dialog_positive_button">Oui</string>
+    <string name="observation_list_areyousure_dialog_negative_button">Non</string>
+
+    <string name="observation_list_upload_progress_dialog_title">Transférer..</string>
+    <string name="observation_list_upload_progress_dialog_message">Transférer observations..</string>
+    <string name="observation_list_upload_error_dialog_message">Les observations restantes n’ont pas pu être chargées, merci d’essayer à nouveau!</string>
+    <string name="observation_list_offline_alert_dialog_message">Impossible de transférer les observations, appareil est offline</string>
+
+
+    <!--Preferenes-->
+    <string name="prefenrences_login_field_title">Login</string>
+    <string name="prefenrences_locale_field_title">Language</string>
+
+    <!--Login dialog-->
+    <string name="login_dialog_title">Login</string>
+    <string name="login_dialog_email_field_title">Email</string>
+    <string name="login_dialog_password_field_title">Mot de passe</string>
+    <string name="login_dialog_btnlogin_title">Login</string>
+    <string name="login_dialog_btnlogout_title">Logout</string>
+    <string name="login_dialog_progress_dialog_title">Login</string>
+    <string name="login_dialog_progress_dialog_message">Logging in...</string>
+    <string name="login_dialog_error_dialog_message">Login invalide.</string>
+
+    <!--Files dialog-->
+    <string name="files_dialog_btnadd_title">Ajouter</string>
+    <string name="files_error_dialog_message">Impossible d\'ajouter l\'image!</string>
+
+
+    <!--offline mode dialog-->
+    <string name="offline_mode_dialog_message">Webfauna est en mode déconnecté sauf pour transmettre les observations, vous pouvez utiliser l’application normalement.</string>
+
+
+    <!--about-->
+    <string name="about_version">Version: 1.1</string>
+    <string name="about_description">Webfauna est un serveur de saisie en ligne consacré à la collecte d\'observations fauniques faites en Suisse et dans ses régions limitrophes. Toute la faune suisse est concernée à l\'exception des oiseaux.</string>
+    <string name="about_email">secretariat.cscf@unine.ch</string>
+    <string name="about_website">http://www.cscf.ch</string>
+    <string name="about_copyright">Copyright CSCF 2014</string>
 
 </resources>

@@ -2,6 +2,7 @@ package ch.leafit.webfauna.models;
 
 import android.util.Log;
 import android.util.SparseArray;
+import ch.leafit.ul.list_items.ULListItemDataModel;
 import ch.leafit.webfauna.data.DataDispatcher;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,13 +14,32 @@ import java.util.UUID;
 /**
  * Created by marius on 17/07/14.
  */
-public class WebfaunaObservationFile  {
+public class WebfaunaObservationFile {
     UUID mGUID;
     UUID mObservationGUID;
     ByteBuffer mData;
     ObservationFileType mType;
 
+    public WebfaunaObservationFile(UUID guid, UUID observationGUID, ByteBuffer data, ObservationFileType type) {
+        mGUID = guid;
+        mObservationGUID = observationGUID;
+        mData = data;
+        mType = type;
 
+        if(mGUID == null)
+            mGUID = UUID.randomUUID();
+    }
+
+    public WebfaunaObservationFile(UUID observationGUID, ByteBuffer data, ObservationFileType type) {
+        mGUID = UUID.randomUUID();
+        mObservationGUID = observationGUID;
+        mData = data;
+        mType = type;
+    }
+
+    public WebfaunaObservationFile() {
+        mGUID = UUID.randomUUID();
+    }
 
     public UUID getGUID() {
         return mGUID;
@@ -85,4 +105,6 @@ public class WebfaunaObservationFile  {
             return mId;
         }
     }
+
+
 }

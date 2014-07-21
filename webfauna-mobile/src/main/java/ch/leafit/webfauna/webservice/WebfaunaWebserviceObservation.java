@@ -38,19 +38,22 @@ import java.security.KeyStore;
  * Created by marius on 14/07/14.
  */
 public class WebfaunaWebserviceObservation {
-    public static boolean postObservationToWebservice(String observationGUID, OutParam<Exception> outEx) {
-        boolean success = false;
+    /**
+     *
+     * @param observationGUID
+     * @param outEx
+     * @param username
+     * @param password
+     * @return RestID of created observation
+     */
+    public static String postObservationToWebservice(String observationGUID, OutParam<Exception> outEx, String username, String password) {
+        String returnRestID = null;
 
         if (observationGUID != null && outEx != null) {
 
             /*get Observation from DataDispatcher*/
             WebfaunaObservation observation = DataDispatcher.getInstantce().getObservation(observationGUID);
 
-            /*temporarily change coordinates*/
-            if(observation.getWebfaunaLocation() != null) {
-                observation.getWebfaunaLocation().setSwissCoordinatesX(600000);
-                observation.getWebfaunaLocation().setSwissCoordinatesY(200000);
-            }
 
             if(observation != null) {
                 String url = Config.webfaunaWebserviceBaseURL + "/observations/";
@@ -77,7 +80,7 @@ public class WebfaunaWebserviceObservation {
                     }
                     // Basic authentication
                     AuthScope as = AuthScope.ANY;
-                    UsernamePasswordCredentials upc = new UsernamePasswordCredentials("app.cscf@unine.ch", "WebFauna2014");
+                    UsernamePasswordCredentials upc = new UsernamePasswordCredentials(username, password);
                     ((AbstractHttpClient) httpClient).getCredentialsProvider().setCredentials(as, upc);
                     BasicHttpContext localContext = new BasicHttpContext();
                     BasicScheme basicAuth = new BasicScheme();
@@ -125,7 +128,22 @@ public class WebfaunaWebserviceObservation {
 
                             Log.i("JSONsuccss:", responseString);
 
-                            success = true;
+                            //get RESTID
+                            JSONObject parsedJSON = new JSONObject(responseString);
+
+                            /*navigate JSON to find Object*/
+                            if(parsedJSON != null) {
+                                JSONArray resource = parsedJSON.getJSONArray("resource");
+                                if(resource != null && resource.length() > 0) {
+                                    JSONObject resultJSON = resource.getJSONObject(0);
+                                    if(resultJSON != null && resultJSON.has("REST-ID")) {
+                                        returnRestID = resultJSON.getString("REST-ID");
+                                    }
+                                }
+                            }
+
+
+
 
 
                         } else {
@@ -136,10 +154,10 @@ public class WebfaunaWebserviceObservation {
                 } catch (Exception ex) {
                     Log.e("WebfaunaWebserviceObservation - postObservation", "error", ex);
                     outEx.setValue(ex);
-                    success = false;
+                    returnRestID = null;
                 }
             }
         }
-        return success;
+        return returnRestID;
     }
 }

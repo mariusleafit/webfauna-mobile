@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 import ch.leafit.ul.list_items.ULListItemDataModel;
+import ch.leafit.webfauna.data.settings.SettingsManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,6 +12,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 
 /**
  * Created by marius on 09/07/14.
@@ -156,7 +158,15 @@ public class WebfaunaGroup extends WebfaunaBaseModel implements ULListItemDataMo
 
     @Override
     public String getTitle() {
-        return getDesignation();
+        Locale currentLocale = SettingsManager.getInstance().getLocale();
+
+        String designation = getDesignation();
+
+        if(currentLocale != null) {
+            designation = getDesignation(currentLocale.getLanguage());
+        }
+
+        return designation;
     }
 
     @Override

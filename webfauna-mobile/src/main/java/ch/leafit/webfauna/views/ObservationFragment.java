@@ -18,7 +18,9 @@ import ch.leafit.ul.list_items.ULListItemDataModel;
 import ch.leafit.ul.list_items.ULListItemModel;
 import ch.leafit.ul.list_items.ULOneFieldListItemModel;
 import ch.leafit.webfauna.R;
+import ch.leafit.webfauna.Utils.NetworkManager;
 import ch.leafit.webfauna.data.DataDispatcher;
+import ch.leafit.webfauna.data.settings.SettingsManager;
 import ch.leafit.webfauna.models.*;
 
 import java.util.ArrayList;
@@ -27,7 +29,8 @@ import java.util.Date;
 /**
  * Created by marius on 25/06/14.
  */
-public class ObservationFragment extends BaseFragment implements LocationDialogFragment.Callback, DataDispatcher.DataDispatcherBroadcastSubscriber, AbundanceDialogFragment.Callback{
+public class ObservationFragment extends BaseFragment implements LocationDialogFragment.Callback, DataDispatcher.DataDispatcherBroadcastSubscriber, AbundanceDialogFragment.Callback,
+        LoginDialogFragment.Callback{
 
     public static final String TAG = "ObservationFragment";
 
@@ -86,11 +89,13 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
     /*dialog fragments*/
     protected LocationDialogFragment mLocationDialogFragment;
     protected AbundanceDialogFragment mAbundanceDialogFragment;
+    protected FilesDialogFragment mFilesDialogFragment;
 
     /*dialos*/
     protected ProgressDialog mProgressDialog;
     protected Dialog mAreYouSureDialog;
     protected Dialog mValidationDialog;
+    LoginDialogFragment mLoginDialog;
 
     protected boolean mDismissCurrentObservation = false;
     /**
@@ -204,7 +209,9 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
         if(mLocationDialogFragment != null && mLocationDialogFragment.isVisible()) {
             mLocationDialogFragment.onActivityResult(requestCode,resultCode,data);
         } else if(mAbundanceDialogFragment != null && mAbundanceDialogFragment.isVisible()) {
-            mAbundanceDialogFragment.onActivityResult(requestCode,resultCode,data);
+            mAbundanceDialogFragment.onActivityResult(requestCode, resultCode, data);
+        } else if(mFilesDialogFragment != null && mFilesDialogFragment.isVisible()) {
+            mFilesDialogFragment.onActivityResult(requestCode,resultCode,data);
         } else {
 
             //get received data
@@ -220,7 +227,7 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
                             mCurrentWebfaunaObservation.setWebfaunaGroup(selectedGroup);
 
                         /*set text of GroupField*/
-                            mGroupField.setValue(selectedGroup.getTitle());
+                            mGroupField.setCurrentSelection(selectedGroup);
                             mGroupField.setMarking(GDCDataField.GDCDataFieldMarking.NOT_MARKED);
                         /*add species of group to the speciesFIeld*/
                             if (mCurrentWebfaunaObservation.getWebfaunaGroup().getRestID() != null) {
@@ -235,16 +242,16 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
                             }
 
                             mCurrentWebfaunaObservation.setWebfaunaSpecies(null);
-                            mSpeciesField.setValue("");
+                            mSpeciesField.setCurrentSelection(null);
                             mSpeciesField.setMarking(GDCDataField.GDCDataFieldMarking.MARKED_AS_INVALID);
                         }
                     }else {
                         mCurrentWebfaunaObservation.setWebfaunaGroup(null);
-                        mGroupField.setValue("");
+                        mGroupField.setCurrentSelection(null);
                         mGroupField.setMarking(GDCDataField.GDCDataFieldMarking.MARKED_AS_INVALID);
 
                         mCurrentWebfaunaObservation.setWebfaunaSpecies(null);
-                        mSpeciesField.setValue("");
+                        mSpeciesField.setCurrentSelection(null);
                         mSpeciesField.setMarking(GDCDataField.GDCDataFieldMarking.MARKED_AS_INVALID);
 
                         mSpeciesField.setDisabled(true);
@@ -257,12 +264,12 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
                             mCurrentWebfaunaObservation.setWebfaunaSpecies(selectedSpecies);
 
                         /*set text of Species*/
-                            mSpeciesField.setValue(selectedSpecies.getTitle());
+                            mSpeciesField.setCurrentSelection(selectedSpecies);
                             mSpeciesField.setMarking(GDCDataField.GDCDataFieldMarking.NOT_MARKED);
                         }
                     } else {
                         mCurrentWebfaunaObservation.setWebfaunaSpecies(null);
-                        mSpeciesField.setValue("");
+                        mSpeciesField.setCurrentSelection(null);
                         mSpeciesField.setMarking(GDCDataField.GDCDataFieldMarking.MARKED_AS_INVALID);
                     }
                     break;
@@ -273,12 +280,12 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
                             mCurrentWebfaunaObservation.setIdentificationMethod(selectedRealmValue);
 
                         /*set text of Species*/
-                            mObservationMethodField.setValue(selectedRealmValue.getTitle());
+                            mObservationMethodField.setCurrentSelection(selectedRealmValue);
                             mObservationMethodField.setMarking(GDCDataField.GDCDataFieldMarking.NOT_MARKED);
                         }
                     } else {
                         mCurrentWebfaunaObservation.setIdentificationMethod(null);
-                        mObservationMethodField.setValue("");
+                        mObservationMethodField.setCurrentSelection(null);
                         mObservationMethodField.setMarking(GDCDataField.GDCDataFieldMarking.MARKED_AS_INVALID);
                     }
                     break;
@@ -290,11 +297,11 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
                             mCurrentWebfaunaObservation.setEnvironmentRealmValue(selectedRealmValue);
 
                         /*set text of Species*/
-                            mEnvironmentField.setValue(selectedRealmValue.getTitle());
+                            mEnvironmentField.setCurrentSelection(selectedRealmValue);
                         }
                     } else {
                         mCurrentWebfaunaObservation.setEnvironmentRealmValue(null);
-                        mEnvironmentField.setValue("");
+                        mEnvironmentField.setCurrentSelection(null);
                     }
                     break;
                 case milieu_data_field_id:
@@ -304,11 +311,11 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
                             mCurrentWebfaunaObservation.setMilieuRealmValue(selectedRealmValue);
 
                         /*set text of Species*/
-                            mMilieuField.setValue(selectedRealmValue.getTitle());
+                            mMilieuField.setCurrentSelection(selectedRealmValue);
                         }
                     } else {
                         mCurrentWebfaunaObservation.setMilieuRealmValue(null);
-                        mMilieuField.setValue("");
+                        mMilieuField.setCurrentSelection(null);
                     }
                     break;
                 case structure_data_field_id:
@@ -318,11 +325,11 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
                             mCurrentWebfaunaObservation.setStructureRealmValue(selectedRealmValue);
 
                         /*set text of Species*/
-                            mStructureField.setValue(selectedRealmValue.getTitle());
+                            mStructureField.setCurrentSelection(selectedRealmValue);
                         }
                     } else {
                         mCurrentWebfaunaObservation.setStructureRealmValue(null);
-                        mStructureField.setValue("");
+                        mStructureField.setCurrentSelection(null);
                     }
                     break;
                 case substrat_data_field_id:
@@ -332,11 +339,11 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
                             mCurrentWebfaunaObservation.setSubstratRealmValue(selectedRealmValue);
 
                         /*set text of Species*/
-                            mSubstratField.setValue(selectedRealmValue.getTitle());
+                            mSubstratField.setCurrentSelection(selectedRealmValue);
                         }
                     } else {
                         mCurrentWebfaunaObservation.setSubstratRealmValue(null);
-                        mSubstratField.setValue("");
+                        mSubstratField.setCurrentSelection(null);
                     }
                     break;
             }
@@ -359,9 +366,14 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
                         public void onClick(DialogInterface dialog, int id) {
                             /*cancel*/
                             mDismissCurrentObservation = true;
-                            if (mIsInEditMode) {
+                            if (!mIsInEditMode) {
+
                                 sCurrentWebfaunaObservation = null;
+                                //delete existing added files
+                                DataDispatcher.getInstantce().deleteObservationFiles(mCurrentWebfaunaObservation.getGUID().toString());
+
                             }
+
                             dialog.dismiss();
                             mParentActivityCallback.showObservationListFragment();
                         }
@@ -378,21 +390,30 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
     }
 
     protected void saveObservation() {
-        WebfaunaValidationResult validationResult = mCurrentWebfaunaObservation.getValidationResult(getResources());
-        if(validationResult.isValid()) {
-            if(mIsInEditMode) {
-                DataDispatcher.getInstantce().editObservation(mCurrentWebfaunaObservation);
-            } else {
-                DataDispatcher.getInstantce().addObservation(mCurrentWebfaunaObservation);
-            }
+        /*check if logged in*/
 
-            mDismissCurrentObservation = true;
-            sCurrentWebfaunaObservation = null;
-            mParentActivityCallback.showObservationListFragment();
+        WebfaunaValidationResult validationResult = mCurrentWebfaunaObservation.getValidationResult(getResources());
+        if (validationResult.isValid()) {
+            if(SettingsManager.getInstance().getUser() != null) {
+                if (mIsInEditMode) {
+                    DataDispatcher.getInstantce().editObservation(mCurrentWebfaunaObservation);
+                } else {
+                    DataDispatcher.getInstantce().addObservation(mCurrentWebfaunaObservation);
+                }
+
+                mDismissCurrentObservation = true;
+                sCurrentWebfaunaObservation = null;
+                mParentActivityCallback.showObservationListFragment();
+
+            } else {
+            /*show login dialog*/
+                mLoginDialog = new LoginDialogFragment();
+                mLoginDialog.show(getChildFragmentManager(), LoginDialogFragment.TAG);
+            }
         } else {
             Resources res = getResources();
 
-            /*Show Are you sure dialog*/
+        /*Show Are you sure dialog*/
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle(res.getString(R.string.observation_validation_dialog_title))
                     .setMessage(validationResult.getValidationMessage())
@@ -405,6 +426,7 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
             mValidationDialog = builder.create();
             mValidationDialog.show();
         }
+
     }
 
     protected void showProgressDialog(String title,String message) {
@@ -480,7 +502,7 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
     public void dataDispatcherSystematicsUpdateError(Exception ex) {
         /*if ObservationFragment gets detatched before the update finished*/
         if(getActivity() != null && getResources() != null) {
-            if (true /*has internetconnection*/) {
+            if (NetworkManager.getInstance().isConnected()) {
                 Resources res = getResources();
                 showRetryDialog(res.getString(R.string.observation_download_progress_dialog_title), res.getString(R.string.observation_download_progress_dialog_message));
             } else {
@@ -506,7 +528,7 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
     public void dataDispatcherThesaurusUpdateError(Exception ex) {
         /*if ObservationFragment gets detatched before the update finished*/
         if(getActivity() != null && getResources() != null) {
-            if (true /*has internetconnection*/) {
+            if (NetworkManager.getInstance().isConnected()) {
                 Resources res = getResources();
                 showRetryDialog(res.getString(R.string.observation_download_progress_dialog_title), res.getString(R.string.observation_download_progress_dialog_message));
             } else {
@@ -575,9 +597,15 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
             @Override
             public void fieldClicked(int tag) {
                 //show FilesDialog
-                FilesDialogFragment filesFragment =  new FilesDialogFragment();
+                mFilesDialogFragment =  new FilesDialogFragment();
 
-                filesFragment.show(getChildFragmentManager(), FilesDialogFragment.TAG);
+                //pass guid of current observation
+                Bundle bundle = new Bundle();
+                bundle.putString(FilesDialogFragment.BUNDLE_KEY_GUID,mCurrentWebfaunaObservation.getGUID().toString());
+
+                mFilesDialogFragment.setArguments(bundle);
+
+                mFilesDialogFragment.show(getChildFragmentManager(), FilesDialogFragment.TAG);
             }
         }));
 
@@ -703,5 +731,15 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
         if(viewModel != null) {
             mCurrentWebfaunaObservation.setWebfaunaAbundance(viewModel);
         }
+    }
+
+    /*LoginDialogFragment.Callback*/
+
+    @Override
+    public void logIn(WebfaunaUser user) {
+    }
+
+    @Override
+    public void logOut() {
     }
 }

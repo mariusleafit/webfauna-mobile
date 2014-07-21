@@ -467,8 +467,13 @@ public class DBManager extends SQLiteOpenHelper{
             c.moveToFirst();
 
             DBObservation observation = new DBObservation();
-            observation.setGUID(c.getString(c.getColumnIndex(KEY_GUID)));
-            observation.setJSON(c.getString(c.getColumnIndex(KEY_JSON)));
+            try {
+                observation.setGUID(c.getString(c.getColumnIndex(KEY_GUID)));
+                observation.setJSON(c.getString(c.getColumnIndex(KEY_JSON)));
+            } catch (Exception ex) {
+                Log.e(LOG,"Could not get observation", ex);
+                observation = null;
+            }
 
             return observation;
         } else {
@@ -487,26 +492,22 @@ public class DBManager extends SQLiteOpenHelper{
 
     public void createObservationFile(ByteBuffer data, DBObservationFile.DBObservationFileType type, String observationGUID) {
         if(data != null && type != null && observationGUID != null) {
-            //if associated Observation exits
-            if(getObservation(observationGUID) != null) {
+            //generate guid
+            UUID fileGUID = UUID.randomUUID();
 
-                //generate guid
-                UUID fileGUID = UUID.randomUUID();
+            DBObservationFile dbObservationFile = new DBObservationFile(fileGUID.toString(),observationGUID,data,type);
 
-                DBObservationFile dbObservationFile = new DBObservationFile(fileGUID.toString(),observationGUID,data,type);
+            //create observationFile
+            SQLiteDatabase db = getWritableDatabase();
 
-                //create observationFile
-                SQLiteDatabase db = getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(KEY_GUID, dbObservationFile.getGUID());
+            values.put(OBSERVATION_FILE_KEY_OBSERVATION_GUID, dbObservationFile.getObservationGUID());
+            values.put(OBSERVATION_FILE_KEY_DATA, dbObservationFile.getData().array());
+            values.put(OBSERVATION_FILE_KEY_TYPE, dbObservationFile.getType().getId());
 
-                ContentValues values = new ContentValues();
-                values.put(KEY_GUID, dbObservationFile.getGUID());
-                values.put(OBSERVATION_FILE_KEY_OBSERVATION_GUID, dbObservationFile.getObservationGUID());
-                values.put(OBSERVATION_FILE_KEY_DATA, dbObservationFile.getData().array());
-                values.put(OBSERVATION_FILE_KEY_TYPE, dbObservationFile.getType().getId());
-
-                //insert row
-                db.insert(TABLE_OBSERVATION_FILE,null,values);
-            }
+            //insert row
+            db.insert(TABLE_OBSERVATION_FILE,null,values);
         }
     }
 
@@ -536,7 +537,7 @@ public class DBManager extends SQLiteOpenHelper{
 
 
                 //set type
-                int typeId = c.getInt(c.getColumnIndex(OBSERVATION_FILE_KEY_DATA));
+                int typeId = c.getInt(c.getColumnIndex(OBSERVATION_FILE_KEY_TYPE));
                 observationFile.setType(DBObservationFile.DBObservationFileType.getType(typeId));
 
                 observationFiles.add(observationFile);
@@ -544,6 +545,16 @@ public class DBManager extends SQLiteOpenHelper{
         }
 
         return observationFiles;
+    }
+
+    public void deleteObservationFile(String fileGUID) {
+        String deleteQuery = "DELETE FROM " + TABLE_OBSERVATION_FILE
+                + " WHERE " + KEY_GUID + " = '" + fileGUID + "'";
+
+        Log.d(LOG,deleteQuery);
+
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL(deleteQuery);
     }
 
     public void deleteObservationFiles(String observationGUID) {

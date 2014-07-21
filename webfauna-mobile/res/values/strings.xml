@@ -30,7 +30,7 @@
     <string name="observation_download_progress_dialog_title">Updating..</string>
     <string name="observation_download_progress_dialog_message">Updating webfauna data..</string>
 
-    <string name="observation_cancel_areyousure_dialog_title">Dismiss Observation?</string>
+    <string name="observation_cancel_areyousure_dialog_title">Dismiss changes?</string>
     <string name="observation_cancel_areyousure_dialog_positive_button">Yes</string>
     <string name="observation_cancel_areyousure_dialog_negative_button">No</string>
 
@@ -62,7 +62,7 @@
     <string name="location_lieudit_title">Lieudit</string>
     <string name="location_coordinates_title">Coordinates</string>
     <string name="location_precision_title">Precision</string>
-    <string name="location_altitude_title">Altitude</string>
+    <string name="location_altitude_title">Altitude (m)</string>
 
     <string name="files_dialog_title">Files</string>
 
@@ -98,4 +98,38 @@
     <string name="observation_list_upload_progress_dialog_title">Uploading..</string>
     <string name="observation_list_upload_progress_dialog_message">Uploading Observations..</string>
     <string name="observation_list_upload_error_dialog_message">The remaining observations couln\'t be uploaded, please retry!</string>
+    <string name="observation_list_offline_alert_dialog_message">Cannot upload Observation, device is offline</string>
+
+
+    <!--Preferenes-->
+    <string name="prefenrences_login_field_title">Login</string>
+    <string name="prefenrences_locale_field_title">Language</string>
+
+    <!--Login dialog-->
+    <string name="login_dialog_title">Login</string>
+    <string name="login_dialog_email_field_title">Email</string>
+    <string name="login_dialog_password_field_title">Password</string>
+    <string name="login_dialog_btnlogin_title">Login</string>
+    <string name="login_dialog_btnlogout_title">Logout</string>
+    <string name="login_dialog_progress_dialog_title">Login</string>
+    <string name="login_dialog_progress_dialog_message">Logging in...</string>
+    <string name="login_dialog_error_dialog_message">Couldn\'t Log in, are your credentials correct?</string>
+
+    <!--Files dialog-->
+    <string name="files_dialog_btnadd_title">Add</string>
+    <string name="files_error_dialog_message">Could not add Image, please try again!</string>
+
+
+    <!--offline mode dialog-->
+    <string name="offline_mode_dialog_message">Webfauna is in offline mode, apart from uploading Observations, you can use the app normally.</string>
+
+
+    <!--about-->
+    <string name="about_version">Version: 1.1</string>
+    <string name="about_description">Webfauna is an online data entry web server for fauna records within Switzerland and from bordering regions. All Swiss fauna is concerned except for birds.
+        Webfauna is the main platform of fauna data exchange for the Swiss Biological Records Center (CSCF) and for the Swiss Amphibians and Reptiles Coordination Program (KARCH)</string>
+    <string name="about_address">Passage Maximilien-de-Meuron 6, CH-2000 Neuchâtel (Suisse)</string>
+    <string name="about_email">secretariat.cscf@unine.ch</string>
+    <string name="about_website">http://www.cscf.ch</string>
+    <string name="about_copyright">Copyright CSCF 2014</string>
 </resources>

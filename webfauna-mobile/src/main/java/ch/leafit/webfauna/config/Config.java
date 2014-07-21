@@ -32,8 +32,9 @@ public final class Config {
 
     /*Webfauna-Webservice stuff*/
     public static String webfaunaWebserviceBaseURL;
-    public static Integer webfaunaWebserviceRequestTimeout;
-    public static Integer webfaunaWebservicePort;
+    //milliseconds
+    public static final Integer webfaunaWebserviceRequestTimeout = 20000;
+    public static final Integer webfaunaWebservicePort = 443;
     /*sent to server, that it knows from what kind of device the observation comes*/
     public static final String webfaunaAppCodeForWebservice = "WFA-MOB";
 
@@ -66,6 +67,10 @@ public final class Config {
             this.localImageResId = localImageResId;
         }
     }
+
+    public static final double MAX_OBSERVATION_IMAGE_SIZE_BYTES = 2000000;
+    public static final int OBSERVATION_IMAGE_HEIGHT = 360;
+    public static final int OBSERVATION_IMAGE_WIDTH = 640;
 
     static {
         debug = true;
@@ -102,8 +107,7 @@ public final class Config {
         } else {
             webfaunaWebserviceBaseURL = "https://webfauna-api.cscf.ch/api/v1/";
         }
-        webfaunaWebserviceRequestTimeout  = 5000;
-        webfaunaWebservicePort = 443;
+
 
         neededWebfaunaGroups = new ArrayList<NeededWebfaunaGroup>();
         /*Mammifières*/

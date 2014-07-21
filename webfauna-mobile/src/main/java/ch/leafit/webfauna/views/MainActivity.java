@@ -2,9 +2,13 @@ package ch.leafit.webfauna.views;
 
 
 import android.app.*;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
 import android.support.v4.app.*;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -19,17 +23,19 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import ch.leafit.webfauna.R;
+import ch.leafit.webfauna.Utils.NetworkManager;
 import ch.leafit.webfauna.config.Config;
 import ch.leafit.webfauna.data.DataDispatcher;
 import ch.leafit.webfauna.models.WebfaunaGroup;
 import ch.leafit.webfauna.models.WebfaunaObservation;
 import ch.leafit.webfauna.webservice.GetSystematicsAsyncTask;
+import ch.leafit.webfauna.webservice.ImageUploadTestAsyncTask;
 import ch.leafit.webfauna.webservice.WebfaunaWebserviceSystematics;
 
 import java.util.ArrayList;
 
 
-public class MainActivity extends FragmentActivity implements ParentActivityCallback {
+public class MainActivity extends FragmentActivity implements ParentActivityCallback, NetworkManager.NetworkManagerCallback{
 
     static {
         /*initialize config*/
@@ -50,18 +56,30 @@ public class MainActivity extends FragmentActivity implements ParentActivityCall
      */
     private Fragment mCurrentFragment;
 
+    private NetworkManager mNetworkManager;
+
+    private Dialog mOfflineModeDialog;
+
     /*
         consts
      */
-    private final int MENU_ADD_POSITION = 0;
-    private final int MENU_OBSERVATIONS_POSITION = 1;
-    private final int MENU_OFFLINE_MAP_POSITION = 2;
-    private final int MENU_PREFERENCES_POSITION = 3;
-    private final int MENU_ABOUT_POSITION = 4;
+    private static final int MENU_ADD_POSITION = 0;
+    private static final int MENU_OBSERVATIONS_POSITION = 1;
+    private static final int MENU_OFFLINE_MAP_POSITION = 2;
+    private static final int MENU_PREFERENCES_POSITION = 3;
+    private static final int MENU_ABOUT_POSITION = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
+        /*test*/
+        ImageUploadTestAsyncTask tes = new ImageUploadTestAsyncTask();
+        tes.execute();
+
+
         setContentView(R.layout.activity_main);
 
         mTitle = mDrawerTitle = getTitle();
@@ -109,6 +127,26 @@ public class MainActivity extends FragmentActivity implements ParentActivityCall
 
         /*set actionbar color*/
         getActionBar().setBackgroundDrawable(new ColorDrawable(Config.actionBarColor));
+
+        /*create networkmanager*/
+        NetworkManager.initializeInstance(this,this);
+        mNetworkManager = NetworkManager.getInstance();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        /*register network receiver*/
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(mNetworkManager, intentFilter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(mNetworkManager);
     }
 
     @Override
@@ -259,5 +297,31 @@ public class MainActivity extends FragmentActivity implements ParentActivityCall
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment returnFragment = fragmentManager.findFragmentByTag(tag);
         return returnFragment;
+    }
+
+    /* NetworkManager.NetworkManagerCallback*/
+
+    @Override
+    public void networkConnectionStatusChanged(boolean isConnected) {
+
+        Log.i("statuschanged", "" + isConnected);
+
+        //show alert dialog if necessary
+        if(!isConnected && mOfflineModeDialog == null || (mOfflineModeDialog != null && !mOfflineModeDialog.isShowing())) {
+            Resources res = getResources();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(res.getString(R.string.offline_mode_dialog_message))
+                    .setPositiveButton(res.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            /*cancel*/
+                            dialog.dismiss();
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            mOfflineModeDialog = builder.create();
+            mOfflineModeDialog.show();
+        } else if(isConnected && mOfflineModeDialog != null && mOfflineModeDialog.isShowing()) {
+            mOfflineModeDialog.dismiss();
+        }
     }
 }

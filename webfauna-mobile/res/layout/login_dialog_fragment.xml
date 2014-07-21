@@ -5,13 +5,19 @@
               android:orientation="vertical"
               android:layout_height="wrap_content">
     <ListView android:layout_width="fill_parent"
-              android:layout_height="300dp"
+              android:layout_height="100dp"
               android:id="@+id/lstMain"
               android:descendantFocusability="afterDescendants"/>
     <Button android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/files_dialog_btnadd_title"
-            android:id="@+id/btnAdd"
+            android:text="@string/login_dialog_btnlogin_title"
+            android:id="@+id/btnLogin"
+            android:layout_marginTop="10dp"
+            android:gravity="right"/>
+    <Button android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/login_dialog_btnlogout_title"
+            android:id="@+id/btnLogout"
             android:layout_marginTop="10dp"
             android:gravity="right"/>
 

@@ -1,23 +1,25 @@
 package ch.leafit.webfauna.data;
 
 import android.content.Context;
+import ch.leafit.webfauna.Utils.NetworkManager;
 import ch.leafit.webfauna.config.Config;
 import ch.leafit.webfauna.data.db.DBManager;
 import ch.leafit.webfauna.data.db.ModelMapper;
 import ch.leafit.webfauna.data.db.models.*;
+import ch.leafit.webfauna.data.settings.SettingsManager;
 import ch.leafit.webfauna.models.*;
 import ch.leafit.webfauna.webservice.GetSystematicsAsyncTask;
 import ch.leafit.webfauna.webservice.GetThesaurusAsyncTask;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.nio.ByteBuffer;
+import java.util.*;
+
 /**
  * Created by marius on 09/07/14.
  *
  * Central point for data interaction
  */
-public final class DataDispatcher implements GetSystematicsAsyncTask.Callback, GetThesaurusAsyncTask.Callback{
+public final class DataDispatcher implements GetSystematicsAsyncTask.Callback, GetThesaurusAsyncTask.Callback, SettingsManager.SettingsManagerBroadcastSubscriber{
 
     private static Context sContext;
 
@@ -38,6 +40,9 @@ public final class DataDispatcher implements GetSystematicsAsyncTask.Callback, G
         mWebfaunaSpeciesOfGroups = new HashMap<String, ArrayList<WebfaunaSpecies>>();
 
         dbManager = new DBManager(sContext);
+
+        /*subscribe SettingsChanges*/
+        SettingsManager.getInstance().subscribe(this);
     }
 
     /*
@@ -77,8 +82,8 @@ public final class DataDispatcher implements GetSystematicsAsyncTask.Callback, G
             getSystematicsFromDB();
             getThesaurusFromDB();
 
-            if(!isInitialized()/* & internet connection???*/) {
-                if(true/*internet connection*/) {
+            if(!isInitialized() && NetworkManager.getInstance().isConnected()) {
+                if(NetworkManager.getInstance().isConnected()) {
                     if (!isSystematicsInitialized()) {
                         updateSystematicsFromWebservice();
                     }
@@ -175,6 +180,13 @@ public final class DataDispatcher implements GetSystematicsAsyncTask.Callback, G
     }
 
     public void addObservation(WebfaunaObservation observation) {
+
+        if(observation.getGUID() == null)
+            observation.setGUID(UUID.randomUUID());
+
+        //delete existing observation
+        dbManager.deleteObservation(observation.getGUID().toString());
+
         DBObservation dbObservation = ModelMapper.getDBObservation(observation);
         if(dbObservation != null) {
             dbManager.createObservation(dbObservation);
@@ -195,6 +207,53 @@ public final class DataDispatcher implements GetSystematicsAsyncTask.Callback, G
     public void deleteObservation(String guid) {
         dbManager.deleteObservation(guid);
     }
+
+
+    /*
+    ObservationFiles
+     */
+    public List<WebfaunaObservationFile> getObservationFiles(String observationGUID) {
+        List<WebfaunaObservationFile> returnFiles = new ArrayList<WebfaunaObservationFile>();
+
+        List<DBObservationFile> dbFiles = dbManager.getObservationFiles(observationGUID);
+
+        for(DBObservationFile dbFile : dbFiles) {
+            WebfaunaObservationFile tmpFile = ModelMapper.getWebfaunaObservationFile(dbFile);
+            if(tmpFile != null)
+                returnFiles.add(tmpFile);
+        }
+
+        return returnFiles;
+    }
+
+    public void addObservationFile(WebfaunaObservationFile file) throws Exception{
+        ByteBuffer data = file.getData();
+
+        DBObservationFile.DBObservationFileType type = null;
+        if(file.getType() != null)
+            type = DBObservationFile.DBObservationFileType.getType(file.getType().getId());
+
+        String observationGUID = null;
+        if(file.getObservationGUID() != null)
+            observationGUID = file.getObservationGUID().toString();
+
+        if(file.getGUID() == null)
+            file.setGUID(UUID.randomUUID());
+
+        if(data != null && type != null && observationGUID != null && !observationGUID.equals(""))
+            dbManager.createObservationFile(data,type,observationGUID);
+        else
+            throw new Exception("DataDispatcher-addObservationFile: could not add observationfiles (invalid params");
+    }
+
+    public void deleteObservationFile(String fileGUID) {
+        dbManager.deleteObservationFile(fileGUID);
+    }
+
+    public void deleteObservationFiles(String observationGUID) {
+        dbManager.deleteObservationFiles(observationGUID);
+    }
+
 
     /*
     Thesaurus
@@ -250,7 +309,14 @@ public final class DataDispatcher implements GetSystematicsAsyncTask.Callback, G
     public void updateThesaurusFromWebservice() {
         /*to avoid multiple executen at the same time*/
         if(getThesaurusAsyncTask == null) {
-            getThesaurusAsyncTask = new GetThesaurusAsyncTask(this,"en");
+
+            String languageCode = "en";
+            Locale locale = SettingsManager.getInstance().getLocale();
+            if(locale != null) {
+                languageCode = locale.getLanguage();
+            }
+
+            getThesaurusAsyncTask = new GetThesaurusAsyncTask(this,languageCode);
             getThesaurusAsyncTask.execute();
         }
     }
@@ -495,5 +561,17 @@ public final class DataDispatcher implements GetSystematicsAsyncTask.Callback, G
         getSystematicsAsyncTask = null;
 
         informSubscribersAboutSystematicsUpdateError(ex);
+    }
+
+    /*SettingsManager.SettingsManagerBroadcastSubscriber*/
+
+    @Override
+    public void settingsLocaleChanged(Locale locale) {
+        updateThesaurusFromWebservice();
+    }
+
+    @Override
+    public void settingsUserChanged(WebfaunaUser user) {
+
     }
 }

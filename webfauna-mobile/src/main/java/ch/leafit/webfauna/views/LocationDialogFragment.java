@@ -125,13 +125,13 @@ public class LocationDialogFragment extends BaseDialogFragment {
                     if (datastore.mSelectedItems.get(0) instanceof WebfaunaRealmValue) {
                         WebfaunaRealmValue selectedRealmValue = (WebfaunaRealmValue) datastore.mSelectedItems.get(0);
                         mViewModel.setPrecision(selectedRealmValue);
-                        mPrecisionField.setValue(selectedRealmValue.getTitle());
+                        mPrecisionField.setCurrentSelection(selectedRealmValue);
                         mPrecisionField.setMarking(GDCDataField.GDCDataFieldMarking.NOT_MARKED);
                         mParentFragmentCallback.locationChanged(mViewModel);
                     }
                 } else {
                     mViewModel.setPrecision(null);
-                    mPrecisionField.setValue("");
+                    mPrecisionField.setCurrentSelection(null);
                     mPrecisionField.setMarking(GDCDataField.GDCDataFieldMarking.MARKED_AS_INVALID);
                 }
                 break;

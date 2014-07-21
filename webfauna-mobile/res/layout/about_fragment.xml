@@ -1,8 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+    <RelativeLayout
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content">
 
-</LinearLayout>
+
+        <ImageView android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:src="@drawable/logo_webfauna"
+                   android:layout_marginTop="20dp"
+                   android:layout_marginLeft="20dp"
+                   android:id="@+id/imgLogo"/>
+        <TextView android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="@string/app_name"
+                  android:textSize="25sp"
+                  android:textStyle="bold"
+                  android:layout_toRightOf="@id/imgLogo"
+                  android:layout_marginTop="30dp"
+                  android:layout_marginLeft="15dp"
+                  android:id="@+id/txtAppName"/>
+        <TextView android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="@string/about_version"
+                  android:textSize="20sp"
+                  android:layout_toRightOf="@id/imgLogo"
+                  android:layout_below="@id/txtAppName"
+                  android:layout_marginTop="5dp"
+                  android:layout_marginLeft="15dp"/>
+
+        <TextView android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="@string/about_description"
+                  android:textSize="15sp"
+                  android:id="@+id/txtDescription"
+                  android:layout_alignParentLeft="true"
+                  android:layout_below="@id/imgLogo"
+                  android:layout_marginTop="40dp"
+                  android:layout_marginLeft="10dp"
+                  android:layout_marginRight="10dp"/>
+
+        <TextView android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="@string/about_address"
+                  android:textSize="15sp"
+                  android:id="@+id/txtAddress"
+                  android:layout_alignParentLeft="true"
+                  android:layout_below="@id/txtDescription"
+                  android:layout_marginTop="40dp"
+                  android:layout_marginLeft="10dp"
+                  android:layout_marginRight="10dp"/>
+
+        <TextView android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="@string/about_email"
+                  android:textSize="15sp"
+                  android:id="@+id/txtEmail"
+                  android:layout_alignParentLeft="true"
+                  android:layout_below="@id/txtAddress"
+                  android:layout_marginTop="10dp"
+                  android:layout_marginLeft="10dp"
+                  android:layout_marginRight="10dp"/>
+
+        <TextView android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="@string/about_website"
+                  android:textSize="15sp"
+                  android:id="@+id/txtWebsite"
+                  android:layout_alignParentLeft="true"
+                  android:layout_below="@id/txtEmail"
+                  android:layout_marginTop="10dp"
+                  android:layout_marginLeft="10dp"
+                  android:layout_marginRight="10dp"/>
+
+        <TextView android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="@string/about_email"
+                  android:textSize="15sp"
+                  android:id="@+id/txtCopyright"
+                  android:layout_alignParentLeft="true"
+                  android:layout_below="@id/txtWebsite"
+                  android:layout_marginTop="10dp"
+                  android:layout_marginLeft="10dp"
+                  android:layout_marginRight="10dp"/>
+
+
+
+    </RelativeLayout>
+
+</ScrollView>

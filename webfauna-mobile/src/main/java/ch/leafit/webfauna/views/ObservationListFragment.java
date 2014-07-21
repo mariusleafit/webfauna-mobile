@@ -16,7 +16,9 @@ import ch.leafit.ul.adapters.ULListAdapter;
 import ch.leafit.ul.adapters.ULSimpleListAdapter;
 import ch.leafit.ul.list_items.ULTwoFieldsListItemModel;
 import ch.leafit.webfauna.R;
+import ch.leafit.webfauna.Utils.NetworkManager;
 import ch.leafit.webfauna.data.DataDispatcher;
+import ch.leafit.webfauna.data.settings.SettingsManager;
 import ch.leafit.webfauna.models.WebfaunaObservation;
 import ch.leafit.webfauna.webservice.PostObservationsAsyncTask;
 import com.sun.javaws.exceptions.InvalidArgumentException;
@@ -107,10 +109,13 @@ public class ObservationListFragment extends BaseFragment implements PostObserva
 
     private void uploadCheckedObservations() {
         ArrayList<WebfaunaObservation> checkedObservations = getCheckedObservations();
-        if(checkedObservations != null && checkedObservations.size() > 0) {
+        if(checkedObservations != null && checkedObservations.size() > 0 && NetworkManager.getInstance().isConnected()) {
             if(mPostObservationAsyncTask == null) {
                 try {
-                    mPostObservationAsyncTask = new PostObservationsAsyncTask(this,checkedObservations);
+                    String username = SettingsManager.getInstance().getUser().getEmail();
+                    String password = SettingsManager.getInstance().getUser().getPassword();
+
+                    mPostObservationAsyncTask = new PostObservationsAsyncTask(this,checkedObservations, username,password);
 
                     /*show progressdialog*/
                     Resources res = getResources();
@@ -121,6 +126,20 @@ public class ObservationListFragment extends BaseFragment implements PostObserva
                     Log.e("ObservationListFragment","upload",e);
                 }
             }
+        } else if(!NetworkManager.getInstance().isConnected()) {
+
+            Resources res = getResources();
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(res.getString(R.string.observation_list_offline_alert_dialog_message))
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.dismiss();
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            Dialog offlineDialog = builder.create();
+            offlineDialog.show();
         }
     }
 
@@ -138,6 +157,8 @@ public class ObservationListFragment extends BaseFragment implements PostObserva
                                 ArrayList<WebfaunaObservation> checkedObservations = getCheckedObservations();
                                 for (WebfaunaObservation observation : checkedObservations) {
                                     DataDispatcher.getInstantce().deleteObservation(observation.getGUID().toString());
+
+                                    DataDispatcher.getInstantce().deleteObservationFiles(observation.getGUID().toString());
                                 }
 
                                 ArrayList<WebfaunaObservation.WebfaunaObservationULListDataModel> listItems = reloadObservationList();

@@ -1,13 +1,17 @@
 package ch.leafit.webfauna.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+
 /**
  * Created by marius on 18/07/14.
  */
-public class WebfaunaUser extends WebfaunaBaseModel{
+public class WebfaunaUser extends WebfaunaBaseModel implements Parcelable{
     private String mEmail;
     private String mPassword;
     private String mFirstName;
@@ -23,8 +27,13 @@ public class WebfaunaUser extends WebfaunaBaseModel{
         mRestID = restID;
     }
 
-    public WebfaunaUser(JSONObject jsonObject) throws Exception{
+    public WebfaunaUser(Parcel in) {
+        readFromParcel(in);
+    }
+
+    public WebfaunaUser(JSONObject jsonObject, String password) throws Exception{
         putJSON(jsonObject);
+        mPassword = password;
     }
 
     public String getEmail() {
@@ -69,8 +78,6 @@ public class WebfaunaUser extends WebfaunaBaseModel{
             mEmail = jsonObject.getString("email");
             mFirstName = jsonObject.getString("firstName");
             mLastName = jsonObject.getString("lastName");
-        }  catch (JSONException e) {
-            Log.e("User - putJSON: ", "JSON", e);
         } catch (Exception e) {
             Log.e("User - putJSON: ","JSON", e);
             throw e;
@@ -92,5 +99,38 @@ public class WebfaunaUser extends WebfaunaBaseModel{
         }
 
         return jsonObject;
+    }
+
+    /*
+     Parcelable
+     */
+    public static final Parcelable.Creator<WebfaunaUser> CREATOR = new Parcelable.Creator<WebfaunaUser>() {
+        public WebfaunaUser createFromParcel(Parcel in ) {
+            return new WebfaunaUser(in);
+        }
+
+        public WebfaunaUser[] newArray(int size) {
+            return new WebfaunaUser[size];
+        }
+    };
+
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mRestID);
+        dest.writeString(mEmail);
+        dest.writeString(mPassword);
+        dest.writeString(mFirstName);
+        dest.writeString(mLastName);
+    }
+
+    private void readFromParcel(Parcel in) {
+        mRestID = in.readString();
+        mEmail = in.readString();
+        mPassword = in.readString();
+        mFirstName = in.readString();
+        mLastName = in.readString();
+    }
+
+    public int describeContents() {
+        return 0;
     }
 }
