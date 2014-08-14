@@ -2,12 +2,7 @@ package ch.leafit.webfauna.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 import ch.leafit.ul.list_items.ULListItemDataModel;
-import com.sun.javaws.exceptions.InvalidArgumentException;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Locale;
 
 /**

@@ -93,10 +93,11 @@ public class SettingsManager {
             }catch (Exception ex) {
                 Log.i(LOG,"initialize-locale",ex);
                 mLocale = Locale.getDefault();
-                if(mLocale == null) {
-                    mLocale = Locale.ENGLISH;
-                }
             }
+        }
+
+        if(mLocale == null) {
+            mLocale = Locale.ENGLISH;
         }
     }
 

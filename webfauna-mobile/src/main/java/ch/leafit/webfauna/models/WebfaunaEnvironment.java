@@ -26,10 +26,14 @@ public class WebfaunaEnvironment  extends WebfaunaBaseModel implements WebfaunaV
         if(toCopy == null) {
             toCopy = new WebfaunaEnvironment();
         }
-        mEnvironment = new WebfaunaRealmValue(toCopy.mEnvironment);
-        mMilieu = new WebfaunaRealmValue(toCopy.mMilieu);
-        mSubstrat = new WebfaunaRealmValue(toCopy.mSubstrat);
-        mStructure = new WebfaunaRealmValue(toCopy.mStructure);
+        if(toCopy.mEnvironment != null)
+            mEnvironment = new WebfaunaRealmValue(toCopy.mEnvironment);
+        if(toCopy.mMilieu != null)
+            mMilieu = new WebfaunaRealmValue(toCopy.mMilieu);
+        if(toCopy.mSubstrat != null)
+            mSubstrat = new WebfaunaRealmValue(toCopy.mSubstrat);
+        if(toCopy.mStructure != null)
+            mStructure = new WebfaunaRealmValue(toCopy.mStructure);
     }
 
 

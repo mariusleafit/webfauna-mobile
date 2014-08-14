@@ -16,8 +16,17 @@ import java.io.FileInputStream;
  */
 public final class FileCompressor {
 
-    private static final String LOG ="FfileCompressor";
+    private static final String LOG ="FileCompressor";
 
+    /**
+     * compresses image to fit the given parameters (
+     * @param imageUri
+     * @param numberOfBytes max file-size of image
+     * @param height max height of image
+     * @param width max width of image
+     * @return
+     * @throws Exception
+     */
     public static Bitmap compressImageToFitSize(String imageUri, double numberOfBytes, int height, int width) throws Exception{
         try {
             //Decode image size

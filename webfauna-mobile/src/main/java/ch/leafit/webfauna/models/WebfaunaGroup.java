@@ -40,8 +40,10 @@ public class WebfaunaGroup extends WebfaunaBaseModel implements ULListItemDataMo
         }
         mRestID = toCopy.mRestID;
         mDefaultDesignation = toCopy.mDefaultDesignation;
-        mDesignations = new HashMap<String, String>(toCopy.mDesignations);
-        mValidIdentificationMethodRestIDs = new ArrayList<String>(toCopy.mValidIdentificationMethodRestIDs);
+        if(toCopy.mDesignations != null)
+            mDesignations = new HashMap<String, String>(toCopy.mDesignations);
+        if(toCopy.mValidIdentificationMethodRestIDs != null)
+            mValidIdentificationMethodRestIDs = new ArrayList<String>(toCopy.mValidIdentificationMethodRestIDs);
         mLocalImageResID = toCopy.mLocalImageResID;
     }
 
@@ -176,7 +178,7 @@ public class WebfaunaGroup extends WebfaunaBaseModel implements ULListItemDataMo
 
     @Override
     public int getImageResId() {
-        return 0;
+        return mLocalImageResID;
     }
 
     /*

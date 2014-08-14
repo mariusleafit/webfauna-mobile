@@ -26,7 +26,7 @@ public class DBManager extends SQLiteOpenHelper{
     private static final String LOG = "DBManager";
 
     // Database Version
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // Database Name
     private static final String DATABASE_NAME = "webfauna";
@@ -56,6 +56,7 @@ public class DBManager extends SQLiteOpenHelper{
     // ReamValue Table - column names: restID, parentRestID, json
 
     // Observation Table - column names: guid, json
+    private static final String OBSERVATION_KEY_IS_ONLINE = "isOnline";
 
     // ObservationFile Table - column names: guid, observationGUID, data, type
     private static final String OBSERVATION_FILE_KEY_OBSERVATION_GUID = "observationGUID";
@@ -85,7 +86,7 @@ public class DBManager extends SQLiteOpenHelper{
 
     // OBSERVATION table create statement
     private static final String CREATE_TABLE_OBSERVATION = "CREATE TABLE " + TABLE_OBSERVATION
-            + "(" + KEY_GUID + " TEXT," + KEY_JSON + " TEXT)";
+            + "(" + KEY_GUID + " TEXT," + KEY_JSON + " TEXT,"+ OBSERVATION_KEY_IS_ONLINE +" INTEGER)";
 
     // OBSERVATION_FILE table create statement
     private static final String CREATE_TABLE_OBSERVATION_FILE = "CREATE TABLE " + TABLE_OBSERVATION_FILE
@@ -415,6 +416,7 @@ public class DBManager extends SQLiteOpenHelper{
         ContentValues values = new ContentValues();
         values.put(KEY_GUID, observationGUID);
         values.put(KEY_JSON, dbObservation.getJSON());
+        values.put(OBSERVATION_KEY_IS_ONLINE, (dbObservation.isOnline()) ? 1 : 0);
 
         //insert row
         db.insert(TABLE_OBSERVATION,null,values);
@@ -425,6 +427,7 @@ public class DBManager extends SQLiteOpenHelper{
 
         ContentValues values = new ContentValues();
         values.put(KEY_JSON, dbObservation.getJSON());
+        values.put(OBSERVATION_KEY_IS_ONLINE, (dbObservation.isOnline()) ? 1 : 0);
 
         // updating row
         db.update(TABLE_OBSERVATION, values, KEY_GUID + " = ?", new String[] { dbObservation.getGUID() });
@@ -445,6 +448,8 @@ public class DBManager extends SQLiteOpenHelper{
                 DBObservation observation = new DBObservation();
                 observation.setGUID(c.getString(c.getColumnIndex(KEY_GUID)));
                 observation.setJSON(c.getString(c.getColumnIndex(KEY_JSON)));
+                Integer intIsOnline = c.getInt(c.getColumnIndex(OBSERVATION_KEY_IS_ONLINE));
+                observation.setIsOnline((intIsOnline != 0));
 
                 observations.add(observation);
             } while(c.moveToNext());
@@ -470,6 +475,8 @@ public class DBManager extends SQLiteOpenHelper{
             try {
                 observation.setGUID(c.getString(c.getColumnIndex(KEY_GUID)));
                 observation.setJSON(c.getString(c.getColumnIndex(KEY_JSON)));
+                Integer intIsOnline = c.getInt(c.getColumnIndex(OBSERVATION_KEY_IS_ONLINE));
+                observation.setIsOnline((intIsOnline != 0));
             } catch (Exception ex) {
                 Log.e(LOG,"Could not get observation", ex);
                 observation = null;

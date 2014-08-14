@@ -31,7 +31,20 @@ public class WebfaunaAbundance extends WebfaunaBaseModel implements WebfaunaVali
         putJSON(jsonObject);
     }
 
-    public WebfaunaAbundance() {}
+    public WebfaunaAbundance() {
+        mIndividuals = 0;
+        mCollection = 0;
+        mMales = 0;
+        mFemales = 0;
+        mEggs = 0;
+        mLarvae = 0;
+        mExuviae = 0;
+        mNymphs = 0;
+        mSubadults = 0;
+        mMating = 0;
+        mTandem = 0;
+        mClutch = 0;
+    }
 
     public WebfaunaAbundance(Parcel in) {
         readFromParcel(in);
@@ -58,17 +71,29 @@ public class WebfaunaAbundance extends WebfaunaBaseModel implements WebfaunaVali
     @Override
     public void putJSON(JSONObject jsonObject) throws Exception{
         try {
+            if(jsonObject.has("individuals"))
             mIndividuals = jsonObject.getInt("individuals");
+            if(jsonObject.has("collection"))
             mCollection = jsonObject.getInt("collection");
+            if(jsonObject.has("males"))
             mMales = jsonObject.getInt("males");
+            if(jsonObject.has("females"))
             mFemales = jsonObject.getInt("females");
+            if(jsonObject.has("eggs"))
             mEggs = jsonObject.getInt("eggs");
+            if(jsonObject.has("larvae"))
             mLarvae = jsonObject.getInt("larvae");
+            if(jsonObject.has("exuviae"))
             mExuviae = jsonObject.getInt("exuviae");
+            if(jsonObject.has("nymphs"))
             mNymphs = jsonObject.getInt("nymphs");
+            if(jsonObject.has("subadults"))
             mSubadults = jsonObject.getInt("subadults");
+            if(jsonObject.has("mating"))
             mMating = jsonObject.getInt("mating");
+            if(jsonObject.has("tandem"))
             mTandem = jsonObject.getInt("tandem");
+            if(jsonObject.has("clutch"))
             mClutch = jsonObject.getInt("clutch");
         } catch (JSONException e) {
             Log.e("WebfaunaAbundance - putJSON: ", "JSON", e);

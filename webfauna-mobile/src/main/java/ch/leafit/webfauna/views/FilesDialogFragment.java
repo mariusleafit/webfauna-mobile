@@ -2,7 +2,6 @@ package ch.leafit.webfauna.views;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,7 +12,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,14 +21,11 @@ import ch.leafit.webfauna.R;
 import ch.leafit.webfauna.Utils.FileCompressor;
 import ch.leafit.webfauna.config.Config;
 import ch.leafit.webfauna.data.DataDispatcher;
-import ch.leafit.webfauna.models.WebfaunaObservation;
 import ch.leafit.webfauna.models.WebfaunaObservationFile;
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 /**

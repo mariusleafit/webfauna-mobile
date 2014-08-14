@@ -25,22 +25,12 @@ import android.widget.ListView;
 import ch.leafit.webfauna.R;
 import ch.leafit.webfauna.Utils.NetworkManager;
 import ch.leafit.webfauna.config.Config;
-import ch.leafit.webfauna.data.DataDispatcher;
-import ch.leafit.webfauna.models.WebfaunaGroup;
 import ch.leafit.webfauna.models.WebfaunaObservation;
-import ch.leafit.webfauna.webservice.GetSystematicsAsyncTask;
 import ch.leafit.webfauna.webservice.ImageUploadTestAsyncTask;
-import ch.leafit.webfauna.webservice.WebfaunaWebserviceSystematics;
-
-import java.util.ArrayList;
 
 
 public class MainActivity extends FragmentActivity implements ParentActivityCallback, NetworkManager.NetworkManagerCallback{
 
-    static {
-        /*initialize config*/
-        Config.init();
-    }
 
     private DrawerLayout mDrawerLayout;
     private ListView mMenuDrawerList;
@@ -76,8 +66,8 @@ public class MainActivity extends FragmentActivity implements ParentActivityCall
 
 
         /*test*/
-        ImageUploadTestAsyncTask tes = new ImageUploadTestAsyncTask();
-        tes.execute();
+        //ImageUploadTestAsyncTask tes = new ImageUploadTestAsyncTask();
+        //tes.execute();
 
 
         setContentView(R.layout.activity_main);
@@ -174,8 +164,8 @@ public class MainActivity extends FragmentActivity implements ParentActivityCall
                 tag = ObservationListFragment.TAG;
                 break;
             case MENU_OFFLINE_MAP_POSITION:
-                mCurrentFragment = new OfflineMapFragment();
-                tag = OfflineMapFragment.TAG;
+                mCurrentFragment = new OfflineMapManagementFragment();
+                tag = OfflineMapManagementFragment.TAG;
                 break;
             case MENU_PREFERENCES_POSITION:
                 mCurrentFragment = new PreferencesFragment();
@@ -278,9 +268,9 @@ public class MainActivity extends FragmentActivity implements ParentActivityCall
     }
 
     @Override
-    public void showObservationFragmentForEditting(WebfaunaObservation observation) {
+    public void showObservationFragment(WebfaunaObservation observation, boolean isInEditMode) {
         try {
-            mCurrentFragment = new ObservationFragment(observation);
+            mCurrentFragment = new ObservationFragment(observation, isInEditMode);
             String tag = ObservationFragment.TAG;
             if(mCurrentFragment != null) {
                 FragmentManager fragmentManager = getSupportFragmentManager();
@@ -299,6 +289,11 @@ public class MainActivity extends FragmentActivity implements ParentActivityCall
         return returnFragment;
     }
 
+    @Override
+    public NetworkManager getNetworkManager() {
+        return mNetworkManager;
+    }
+
     /* NetworkManager.NetworkManagerCallback*/
 
     @Override
@@ -307,7 +302,7 @@ public class MainActivity extends FragmentActivity implements ParentActivityCall
         Log.i("statuschanged", "" + isConnected);
 
         //show alert dialog if necessary
-        if(!isConnected && mOfflineModeDialog == null || (mOfflineModeDialog != null && !mOfflineModeDialog.isShowing())) {
+        if(!isConnected && mOfflineModeDialog == null) {
             Resources res = getResources();
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(res.getString(R.string.offline_mode_dialog_message))
@@ -320,8 +315,9 @@ public class MainActivity extends FragmentActivity implements ParentActivityCall
             // Create the AlertDialog object and return it
             mOfflineModeDialog = builder.create();
             mOfflineModeDialog.show();
-        } else if(isConnected && mOfflineModeDialog != null && mOfflineModeDialog.isShowing()) {
+        } else if(isConnected && mOfflineModeDialog != null) {
             mOfflineModeDialog.dismiss();
+            mOfflineModeDialog = null;
         }
     }
 }

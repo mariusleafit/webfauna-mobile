@@ -3,26 +3,19 @@ package ch.leafit.webfauna.views;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import ch.leafit.gdc.*;
 import ch.leafit.gdc.callback.GDCClickDataFieldCallback;
-import ch.leafit.gdc.callback.GDCDataFieldCallback;
 import ch.leafit.ul.activities.intent_datastores.ULListActivityReturnIntentDatastore;
-import ch.leafit.ul.list_items.ULListItemDataModel;
-import ch.leafit.ul.list_items.ULListItemModel;
 import ch.leafit.ul.list_items.ULOneFieldListItemModel;
 import ch.leafit.webfauna.R;
-import ch.leafit.webfauna.data.DataDispatcher;
 import ch.leafit.webfauna.data.settings.SettingsManager;
 import ch.leafit.webfauna.models.*;
-import com.sun.javaws.exceptions.InvalidArgumentException;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -103,8 +96,10 @@ public class PreferencesFragment extends BaseFragment implements LoginDialogFrag
         mLoginDataField = new GDCClickDataField(getActivity(),login_data_field_id,res.getString(R.string.prefenrences_login_field_title),new GDCClickDataFieldCallback() {
             @Override
             public void fieldClicked(int tag) {
-                mLoginDialog = new LoginDialogFragment();
-                mLoginDialog.show(getChildFragmentManager(), LoginDialogFragment.TAG);
+                if(mLoginDialog == null || (mLoginDialog != null && !mLoginDialog.isVisible())) {
+                    mLoginDialog = new LoginDialogFragment();
+                    mLoginDialog.show(getChildFragmentManager(), LoginDialogFragment.TAG);
+                }
             }
         });
         dataFields.add(mLoginDataField);

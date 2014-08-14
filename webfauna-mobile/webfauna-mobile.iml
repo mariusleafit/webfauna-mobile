@@ -27,6 +27,7 @@
       <excludeFolder url="file://$MODULE_DIR$/target/generated-sources/combined-resources" />
       <excludeFolder url="file://$MODULE_DIR$/target/generated-sources/extracted-dependencies" />
       <excludeFolder url="file://$MODULE_DIR$/target/idea-classes" />
+      <excludeFolder url="file://$MODULE_DIR$/target/maven-archiver" />
       <excludeFolder url="file://$MODULE_DIR$/target/maven-status" />
       <excludeFolder url="file://$MODULE_DIR$/target/unpacked-libs" />
     </content>
@@ -44,9 +45,11 @@
     <orderEntry type="library" name="Maven: com.android.support:support-v4:19.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpmime:4.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.james:apache-mime4j:0.6" level="project" />
+    <orderEntry type="library" name="Maven: com.google.android.gms:play-services:aar:5.0.77" level="project" />
     <orderEntry type="module" module-name="~apklib-ch.leafit.gdc_general-data-capturing-lib_1.0-SNAPSHOT" />
     <orderEntry type="module" module-name="~apklib-ch.leafit.iac_inter-activity-communication-lib_1.0-SNAPSHOT" />
     <orderEntry type="module" module-name="~apklib-ch.leafit.ul_universal-list-library_1.0-SNAPSHOT" />
+    <orderEntry type="module" module-name="~apklib-ch.leafit.om_offline-map-lib_1.0-SNAPSHOT" />
   </component>
 </module>
 

@@ -69,12 +69,14 @@ public class GDCCoordinatesDataField extends GDCDataField{
             mLblWGS = (TextView)mView.findViewById(R.id.lblWGS);
             mBtnReload = (ImageView)mView.findViewById(R.id.btnReload);
 
-            View.OnClickListener dateClickListener = new View.OnClickListener() {
+            mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     mCallback.coordinatesDataFieldClicked();
                 }
-            };
+            });
+
+
 
             mBtnReload.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -21,9 +21,12 @@ import ch.leafit.ul.activities.intent_datastores.ULListActivityReturnIntentDatas
 import ch.leafit.ul.list_items.ULListItemModel;
 import ch.leafit.ul.list_items.ULOneFieldListItemModel;
 import ch.leafit.webfauna.R;
+import ch.leafit.webfauna.Utils.GeoMath;
 import ch.leafit.webfauna.data.DataDispatcher;
 import ch.leafit.webfauna.gdc.GDCCoordinatesDataField;
 import ch.leafit.webfauna.models.WebfaunaRealmValue;
+import com.google.android.gms.maps.model.LatLng;
+import jdk.nashorn.internal.objects.NativeArray;
 
 import java.util.ArrayList;
 
@@ -39,6 +42,8 @@ public class LocationDialogFragment extends BaseDialogFragment {
     protected static final int coordinates_data_field_id = 1;
     protected static final int precision_data_field_id = 2;
     protected static final int altitude_data_field_id = 3;
+
+    protected static final int map_activity_request_code = 666;
 
     /*UI-elements*/
     protected ListView mListView;
@@ -117,24 +122,40 @@ public class LocationDialogFragment extends BaseDialogFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //get received data
-        ULListActivityReturnIntentDatastore datastore = new ULListActivityReturnIntentDatastore(data);
-        switch (requestCode) {
-            case precision_data_field_id:
-                if (datastore != null && datastore.mSelectedItems != null && datastore.mSelectedItems.size() > 0) {
-                    if (datastore.mSelectedItems.get(0) instanceof WebfaunaRealmValue) {
-                        WebfaunaRealmValue selectedRealmValue = (WebfaunaRealmValue) datastore.mSelectedItems.get(0);
-                        mViewModel.setPrecision(selectedRealmValue);
-                        mPrecisionField.setCurrentSelection(selectedRealmValue);
-                        mPrecisionField.setMarking(GDCDataField.GDCDataFieldMarking.NOT_MARKED);
-                        mParentFragmentCallback.locationChanged(mViewModel);
+
+        if(requestCode == map_activity_request_code) {
+            //get returnet latlng of MapActivity
+            if(data != null && data.hasExtra(MapActivity.BUNDLE_LAT_LNG_KEY) && data.getParcelableExtra(MapActivity.BUNDLE_LAT_LNG_KEY) instanceof LatLng) {
+                LatLng selectedLocation = data.getParcelableExtra(MapActivity.BUNDLE_LAT_LNG_KEY);
+
+                mCoordinatesField.setCHcoordinates(GeoMath.getCHx(selectedLocation.latitude,selectedLocation.longitude),GeoMath.getCHy(selectedLocation.latitude,selectedLocation.longitude));
+
+                mViewModel.mCHx = GeoMath.getCHx(selectedLocation.latitude,selectedLocation.longitude);
+                mViewModel.mCHy = GeoMath.getCHy(selectedLocation.latitude,selectedLocation.longitude);
+                mViewModel.mLat = selectedLocation.latitude;
+                mViewModel.mLng = selectedLocation.longitude;
+                mParentFragmentCallback.locationChanged(mViewModel);
+            }
+        } else {
+            //get received data
+            ULListActivityReturnIntentDatastore datastore = new ULListActivityReturnIntentDatastore(data);
+            switch (requestCode) {
+                case precision_data_field_id:
+                    if (datastore != null && datastore.mSelectedItems != null && datastore.mSelectedItems.size() > 0) {
+                        if (datastore.mSelectedItems.get(0) instanceof WebfaunaRealmValue) {
+                            WebfaunaRealmValue selectedRealmValue = (WebfaunaRealmValue) datastore.mSelectedItems.get(0);
+                            mViewModel.setPrecision(selectedRealmValue);
+                            mPrecisionField.setCurrentSelection(selectedRealmValue);
+                            mPrecisionField.setMarking(GDCDataField.GDCDataFieldMarking.NOT_MARKED);
+                            mParentFragmentCallback.locationChanged(mViewModel);
+                        }
+                    } else {
+                        mViewModel.setPrecision(null);
+                        mPrecisionField.setCurrentSelection(null);
+                        mPrecisionField.setMarking(GDCDataField.GDCDataFieldMarking.MARKED_AS_INVALID);
                     }
-                } else {
-                    mViewModel.setPrecision(null);
-                    mPrecisionField.setCurrentSelection(null);
-                    mPrecisionField.setMarking(GDCDataField.GDCDataFieldMarking.MARKED_AS_INVALID);
-                }
-                break;
+                    break;
+            }
         }
     }
 
@@ -164,6 +185,19 @@ public class LocationDialogFragment extends BaseDialogFragment {
             @Override
             public void coordinatesDataFieldClicked() {
                 /*oopen map-activtiy*/
+                Intent mapActivityIntent = new Intent(getActivity(),MapActivity.class);
+
+                //put position if necessary
+                if(mViewModel.mCHx != -1 && mViewModel.mCHy != -1) {
+                    double lat = GeoMath.getLat(mViewModel.mCHx, mViewModel.mCHy);
+                    double lng = GeoMath.getLng(mViewModel.mCHx, mViewModel.mCHy);
+
+                    LatLng latLng = new LatLng(lat,lng);
+
+                    mapActivityIntent.putExtra(MapActivity.BUNDLE_LAT_LNG_KEY,latLng);
+                }
+
+                getActivity().startActivityForResult(mapActivityIntent,map_activity_request_code);
             }
         });
         /*default value...*/

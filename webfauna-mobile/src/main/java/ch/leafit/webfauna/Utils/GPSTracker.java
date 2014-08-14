@@ -18,6 +18,8 @@ import ch.leafit.webfauna.config.Config;
 
 /**
  * Created by marius on 15/07/14.
+ *
+ * tracks location changes & returns the current coordinates
  */
 public class GPSTracker extends Service implements LocationListener {
 
@@ -167,7 +169,7 @@ public class GPSTracker extends Service implements LocationListener {
    public void showSettingsAlert(){
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
 
-       Resources res = mContext.getResources();
+        Resources res = mContext.getResources();
 
         alertDialog.setTitle(res.getString(R.string.gps_disabled_dialog_title));
         alertDialog.setMessage(res.getString(R.string.gps_disabled_dialog_message));

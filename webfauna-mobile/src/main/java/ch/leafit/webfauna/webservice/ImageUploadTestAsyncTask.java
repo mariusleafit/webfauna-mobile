@@ -39,8 +39,11 @@ public class ImageUploadTestAsyncTask extends AsyncTask<Void,Void,Void> {
     @Override
     protected Void doInBackground(Void... params) {
 
-        String url = "http://posttestserver.com/post.php?dump&html&dir=maurius";
+        //String url = "http://posttestserver.com/post.php?dump&html&dir=maurius";
         //String url = "https://webfauna-api-test.cscf.ch/api/v1/observations/123388/files";
+        //String url = "http://webfauna-api-test.cscf.ch/api/v1/observations/123478/files";
+        String url = "https://webfauna-api.cscf.ch/api/v1/observations/133420/files";
+        //String url = "http://130.125.9.172:8080/webfauna-ws/api/v1/observations/123390/files";
 
 
         HttpResponse response;
@@ -49,39 +52,16 @@ public class ImageUploadTestAsyncTask extends AsyncTask<Void,Void,Void> {
             HttpParams httpParameters = new BasicHttpParams();
             HttpConnectionParams.setConnectionTimeout(httpParameters, Config.webfaunaWebserviceRequestTimeout);
             HttpConnectionParams.setSoTimeout(httpParameters,Config.webfaunaWebserviceRequestTimeout);
-            HttpProtocolParams.setUseExpectContinue(httpParameters, true);
+            HttpProtocolParams.setUseExpectContinue(httpParameters, false);
 
 
             DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
-                //accept all certificates if debug is enabled
-                    if (Config.debug) {
-                        // Accept all certificate
-                        KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-                        trustStore.load(null, null);
-
-                        SSLSocketFactory sf = new TrustAllSSLSocketFactory(trustStore);
-                        sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-
-                        SchemeRegistry registry = new SchemeRegistry();
-                        registry.register(new Scheme("https", sf, Config.webfaunaWebservicePort));
-                        registry.register(new Scheme("http", sf, 80));
-
-                        ClientConnectionManager ccm = new ThreadSafeClientConnManager(httpClient.getParams(), registry);
-                        httpClient = new DefaultHttpClient(ccm, httpClient.getParams());
-                        // End ------------------
-                    }
-                    // Basic authentication
-                    AuthScope as = AuthScope.ANY;
-                    UsernamePasswordCredentials upc = new UsernamePasswordCredentials("app.cscf@unine.ch", "WebFauna2014");
-                    ((AbstractHttpClient) httpClient).getCredentialsProvider().setCredentials(as, upc);
-                    BasicHttpContext localContext = new BasicHttpContext();
-                    BasicScheme basicAuth = new BasicScheme();
-                    localContext.setAttribute("preemptive-auth", basicAuth);
-                    // End ----------------
+            httpClient.getParams().setBooleanParameter("http.protocol.expect-continue",false);
 
 
             HttpPost httpPost = new HttpPost(url);
 
+            httpPost.setHeader("Authorization","Basic YXBwLmNzY2ZAdW5pbmUuY2g6V2ViRmF1bmEyMDE0");
 
             MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
 
@@ -96,13 +76,23 @@ public class ImageUploadTestAsyncTask extends AsyncTask<Void,Void,Void> {
 
             Bitmap compressedBitmap = FileCompressor.compressImageToFitSize("/storage/sdcard0/QrDroid/QR_Droid.png", Config.MAX_OBSERVATION_IMAGE_SIZE_BYTES, Config.OBSERVATION_IMAGE_HEIGHT, Config.OBSERVATION_IMAGE_WIDTH);
 
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            compressedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-
             File tmpFile = File.createTempFile("image","jpeg");
             tmpFile.deleteOnExit();
+            FileOutputStream fileOutStream = new FileOutputStream(tmpFile);
+            compressedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutStream);
 
-            stream.writeTo(new FileOutputStream(tmpFile));
+
+
+
+
+            //entity.addPart("file", new FileBody(new File("/storage/sdcard0/QrDroid/QR_Droid.png"),"image/png"));
+
+            //File imageFile = new File("/storage/sdcard0/DCIM/Camera/20140319_115248.jpg");
+            //File imageFile = new File("/storage/sdcard0/QrDroid/QR_Droid.png");
+
+            if(!tmpFile.canRead()) {
+                throw new RuntimeException("asdf");
+            }
 
             entity.addPart("file", new FileBody(tmpFile,"image/jpeg"));
             //entity.addPart("test", new StringBody("asdfsfa"));
@@ -116,12 +106,12 @@ public class ImageUploadTestAsyncTask extends AsyncTask<Void,Void,Void> {
 
             //Log.i("content-type", httpPost.getFirstHeader("Content-Type").getValue());
 
-            response = httpClient.execute(httpPost, localContext);
+            response = httpClient.execute(httpPost/*, localContext*/);
 
                     /*check if request went well*/
             StatusLine statusLine = response.getStatusLine();
                     /*observation added properly*/
-            if (statusLine.getStatusCode() == 201) {
+            //if (statusLine.getStatusCode() == 201) {
                     /* get string response*/
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 response.getEntity().writeTo(out);
@@ -130,10 +120,10 @@ public class ImageUploadTestAsyncTask extends AsyncTask<Void,Void,Void> {
 
                 Log.i("JSONsuccss:", responseString);
 
-            } else {
+            /*} else {
                 response.getEntity().getContent().close();
                 throw new IOException(statusLine.getReasonPhrase());
-            }
+            }*/
 
         } catch (Exception ex) {
             Log.e("WebfaunaWebserviceObservation - postObservation", "error", ex);

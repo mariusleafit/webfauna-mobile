@@ -163,6 +163,7 @@ public final class ModelMapper {
 
                 UUID guid = UUID.fromString(dbObservation.getGUID());
                 returnValue.setGUID(guid);
+                returnValue.setIsOnline(dbObservation.isOnline());
             } catch (Exception e) {
                 Log.e(LOG, "getWebfaunaObservation", e);
                 returnValue = null;
@@ -183,7 +184,7 @@ public final class ModelMapper {
                     guid = webfaunaObservation.getGUID().toString();
                 }
 
-                returnValue = new DBObservation(guid,jsonData.toString());
+                returnValue = new DBObservation(guid,jsonData.toString(),webfaunaObservation.isOnline());
             } catch (Exception e) {
                 Log.e(LOG, "getDBRealmValue", e);
             }

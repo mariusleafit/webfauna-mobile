@@ -9,6 +9,8 @@ import ch.leafit.webfauna.models.WebfaunaRealmValue;
 import ch.leafit.webfauna.models.WebfaunaSpecies;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 /**
@@ -44,9 +46,24 @@ public class GetThesaurusAsyncTask extends AsyncTask<Void,Void,Void> {
         if(mIdentificationMethodRealm != null && outEx.getValue() == null) {
             ArrayList<WebfaunaRealmValue> tmpRealmValues = WebfaunaWebserviceThesaurus.getRealmValuesFromWebservice(Config.webfaunaIdentificationMethodRealmRestID,mLanguageCode,outEx);
             if(tmpRealmValues != null && outEx.getValue() == null) {
+
+                //sort realmValues
+                Collections.sort(tmpRealmValues,new Comparator<WebfaunaRealmValue>() {
+                    @Override
+                    public int compare(WebfaunaRealmValue lhs, WebfaunaRealmValue rhs) {
+                        if (lhs.getTitle() != null && rhs.getTitle() != null) {
+                            return lhs.getTitle().compareTo(rhs.getTitle());
+                        } else {
+                            return 0;
+                        }
+
+                    }
+                });
+
                 mIdentificationMethodRealm.setRealmValues(tmpRealmValues);
             }
         }
+
 
         /*precision*/
         if(outEx.getValue() == null) {
@@ -54,6 +71,20 @@ public class GetThesaurusAsyncTask extends AsyncTask<Void,Void,Void> {
             if(mPrecisionRealm != null && outEx.getValue() == null) {
                 ArrayList<WebfaunaRealmValue> tmpRealmValues = WebfaunaWebserviceThesaurus.getRealmValuesFromWebservice(Config.webfaunaPrecisionRealmRestID,mLanguageCode,outEx);
                 if(tmpRealmValues != null && outEx.getValue() == null) {
+
+                    //sort realmValues
+                    Collections.sort(tmpRealmValues,new Comparator<WebfaunaRealmValue>() {
+                        @Override
+                        public int compare(WebfaunaRealmValue lhs, WebfaunaRealmValue rhs) {
+                            if(lhs.getTitle() != null && rhs.getTitle() != null) {
+                                return lhs.getTitle().compareTo(rhs.getTitle());
+                            } else {
+                                return 0;
+                            }
+
+                        }
+                    });
+
                     mPrecisionRealm.setRealmValues(tmpRealmValues);
                 }
             }
@@ -65,6 +96,21 @@ public class GetThesaurusAsyncTask extends AsyncTask<Void,Void,Void> {
             if(mEnvironmentRealm != null && outEx.getValue() == null) {
                 ArrayList<WebfaunaRealmValue> tmpRealmValues = WebfaunaWebserviceThesaurus.getRealmValuesFromWebservice(Config.webfaunaEnvironmentRealmRestID,mLanguageCode,outEx);
                 if(tmpRealmValues != null && outEx.getValue() == null) {
+
+
+                    //sort realmValues
+                    Collections.sort(tmpRealmValues,new Comparator<WebfaunaRealmValue>() {
+                        @Override
+                        public int compare(WebfaunaRealmValue lhs, WebfaunaRealmValue rhs) {
+                            if(lhs.getTitle() != null && rhs.getTitle() != null) {
+                                return lhs.getTitle().compareTo(rhs.getTitle());
+                            } else {
+                                return 0;
+                            }
+
+                        }
+                    });
+
                     mEnvironmentRealm.setRealmValues(tmpRealmValues);
                 }
             }
@@ -76,6 +122,20 @@ public class GetThesaurusAsyncTask extends AsyncTask<Void,Void,Void> {
             if(mMilieuRealm != null && outEx.getValue() == null) {
                 ArrayList<WebfaunaRealmValue> tmpRealmValues = WebfaunaWebserviceThesaurus.getRealmValuesFromWebservice(Config.webfaunaMilieuRealmRestID,mLanguageCode,outEx);
                 if(tmpRealmValues != null && outEx.getValue() == null) {
+
+                    //sort realmValues
+                    Collections.sort(tmpRealmValues,new Comparator<WebfaunaRealmValue>() {
+                        @Override
+                        public int compare(WebfaunaRealmValue lhs, WebfaunaRealmValue rhs) {
+                            if(lhs.getTitle() != null && rhs.getTitle() != null) {
+                                return lhs.getTitle().compareTo(rhs.getTitle());
+                            } else {
+                                return 0;
+                            }
+
+                        }
+                    });
+
                     mMilieuRealm.setRealmValues(tmpRealmValues);
                 }
             }
@@ -87,6 +147,20 @@ public class GetThesaurusAsyncTask extends AsyncTask<Void,Void,Void> {
             if(mStructureRealm != null && outEx.getValue() == null) {
                 ArrayList<WebfaunaRealmValue> tmpRealmValues = WebfaunaWebserviceThesaurus.getRealmValuesFromWebservice(Config.webfaunaStructureRealmRestID,mLanguageCode,outEx);
                 if(tmpRealmValues != null && outEx.getValue() == null) {
+
+                    //sort realmValues
+                    Collections.sort(tmpRealmValues,new Comparator<WebfaunaRealmValue>() {
+                        @Override
+                        public int compare(WebfaunaRealmValue lhs, WebfaunaRealmValue rhs) {
+                            if(lhs.getTitle() != null && rhs.getTitle() != null) {
+                                return lhs.getTitle().compareTo(rhs.getTitle());
+                            } else {
+                                return 0;
+                            }
+
+                        }
+                    });
+
                     mStructureRealm.setRealmValues(tmpRealmValues);
                 }
             }
@@ -98,6 +172,20 @@ public class GetThesaurusAsyncTask extends AsyncTask<Void,Void,Void> {
             if(mSubstratRealm != null && outEx.getValue() == null) {
                 ArrayList<WebfaunaRealmValue> tmpRealmValues = WebfaunaWebserviceThesaurus.getRealmValuesFromWebservice(Config.webfaunaSubstratRealmRestID,mLanguageCode,outEx);
                 if(tmpRealmValues != null && outEx.getValue() == null) {
+
+                    //sort realmValues
+                    Collections.sort(tmpRealmValues,new Comparator<WebfaunaRealmValue>() {
+                        @Override
+                        public int compare(WebfaunaRealmValue lhs, WebfaunaRealmValue rhs) {
+                            if(lhs.getTitle() != null && rhs.getTitle() != null) {
+                                return lhs.getTitle().compareTo(rhs.getTitle());
+                            } else {
+                                return 0;
+                            }
+
+                        }
+                    });
+
                     mSubstratRealm.setRealmValues(tmpRealmValues);
                 }
             }

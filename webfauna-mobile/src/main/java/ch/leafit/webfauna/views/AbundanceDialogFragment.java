@@ -171,10 +171,11 @@ public class AbundanceDialogFragment extends BaseDialogFragment {
             }
         },eggsDefaultValue));
 
-        //larvae
-        Integer larvaeDefaultValue = 0;
+
+        //larves
+        Integer larvesDefaultValue = 0;
         if(mViewModel.mLarvae != null) {
-            larvaeDefaultValue = mViewModel.mLarvae;
+            larvesDefaultValue = mViewModel.mLarvae;
         }
         dataFields.add(new GDCIntegerDataField(getActivity(),larves_field_tag,res.getString(R.string.abundance_larves_title),new GDCDataFieldCallback<Integer>() {
             @Override
@@ -182,7 +183,22 @@ public class AbundanceDialogFragment extends BaseDialogFragment {
                 mViewModel.mLarvae = value;
                 mParentFragmentCallback.abundanceChanged(mViewModel);
             }
-        },larvaeDefaultValue));
+        },larvesDefaultValue));
+
+        //youngs
+        Integer youngsDefaultValue = 0;
+        if(mViewModel.mExuviae != null) {
+            youngsDefaultValue = mViewModel.mExuviae;
+        }
+        dataFields.add(new GDCIntegerDataField(getActivity(),youngs_field_tag,res.getString(R.string.abundance_youngs_title),new GDCDataFieldCallback<Integer>() {
+            @Override
+            public void valueChanged(int tag, Integer value) {
+                mViewModel.mExuviae = value;
+                mParentFragmentCallback.abundanceChanged(mViewModel);
+            }
+        },youngsDefaultValue));
+
+
 
         //nymphs
         Integer nymphsDefaultValue = 0;
@@ -197,7 +213,7 @@ public class AbundanceDialogFragment extends BaseDialogFragment {
             }
         },nymphsDefaultValue));
 
-        //nymphs
+        //subadults
         Integer subadultsDefaultValue = 0;
         if(mViewModel.mSubadults != null) {
             subadultsDefaultValue = mViewModel.mSubadults;
@@ -209,6 +225,19 @@ public class AbundanceDialogFragment extends BaseDialogFragment {
                 mParentFragmentCallback.abundanceChanged(mViewModel);
             }
         },subadultsDefaultValue));
+
+        //couples
+        Integer couplesDefaultValue = 0;
+        if(mViewModel.mMating != null) {
+            couplesDefaultValue = mViewModel.mMating;
+        }
+        dataFields.add(new GDCIntegerDataField(getActivity(),couples_field_tag,res.getString(R.string.abundance_couples_title),new GDCDataFieldCallback<Integer>() {
+            @Override
+            public void valueChanged(int tag, Integer value) {
+                mViewModel.mMating = value;
+                mParentFragmentCallback.abundanceChanged(mViewModel);
+            }
+        },couplesDefaultValue));
 
 
         return dataFields;

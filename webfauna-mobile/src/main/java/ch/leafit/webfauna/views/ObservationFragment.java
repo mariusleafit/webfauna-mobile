@@ -14,6 +14,7 @@ import ch.leafit.gdc.*;
 import ch.leafit.gdc.callback.GDCClickDataFieldCallback;
 import ch.leafit.gdc.callback.GDCDataFieldCallback;
 import ch.leafit.ul.activities.intent_datastores.ULListActivityReturnIntentDatastore;
+import ch.leafit.ul.list_items.ULImageOneFieldListItemModel;
 import ch.leafit.ul.list_items.ULListItemDataModel;
 import ch.leafit.ul.list_items.ULListItemModel;
 import ch.leafit.ul.list_items.ULOneFieldListItemModel;
@@ -29,8 +30,7 @@ import java.util.Date;
 /**
  * Created by marius on 25/06/14.
  */
-public class ObservationFragment extends BaseFragment implements LocationDialogFragment.Callback, DataDispatcher.DataDispatcherBroadcastSubscriber, AbundanceDialogFragment.Callback,
-        LoginDialogFragment.Callback{
+public class ObservationFragment extends BaseFragment implements LocationDialogFragment.Callback, DataDispatcher.DataDispatcherBroadcastSubscriber, AbundanceDialogFragment.Callback{
 
     public static final String TAG = "ObservationFragment";
 
@@ -56,14 +56,21 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
     protected static final int structure_data_field_id = 8;
     protected static final int substrat_data_field_id = 9;
 
+    protected static final int date_section_field_id = 11;
+    protected static final int location_section_field_id = 12;
+    protected static final int files_section_field_id = 13;
+
+
     protected WebfaunaObservation mCurrentWebfaunaObservation;
     protected boolean mIsInEditMode;
 
     /*UI-elements*/
     protected ListView mListView;
 
+    protected ObservationTopField mTopField;
+
     /*list-stuff*/
-    protected GDCListAdapter mListAdapter;
+    protected GDCHideableListAdapter mListAdapter;
 
     /*list-datafields*/
 
@@ -95,7 +102,7 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
     protected ProgressDialog mProgressDialog;
     protected Dialog mAreYouSureDialog;
     protected Dialog mValidationDialog;
-    LoginDialogFragment mLoginDialog;
+
 
     protected boolean mDismissCurrentObservation = false;
     /**
@@ -120,13 +127,13 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
      *
      * @param webfaunaObservation observation to Edit
      */
-    public ObservationFragment(WebfaunaObservation webfaunaObservation) throws CloneNotSupportedException{
+    public ObservationFragment(WebfaunaObservation webfaunaObservation, boolean isInEditMode) throws CloneNotSupportedException{
         mCurrentWebfaunaObservation = new WebfaunaObservation(webfaunaObservation);
 
         /*subscribe for data changes*/
         DataDispatcher.getInstantce().subscribe(this);
 
-        mIsInEditMode = true;
+        mIsInEditMode = isInEditMode;
     }
 
     @Override
@@ -145,6 +152,8 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
          */
         mListView = (ListView)contentView.findViewById(R.id.lstMain);
         mListView.setItemsCanFocus(true);
+
+        mTopField = (ObservationTopField)contentView.findViewById(R.id.topField);
 
         /*
         get data from datadispatcher if initialized
@@ -183,6 +192,14 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu items for use in the action bar
         inflater.inflate(R.menu.observation_fragment_actionbar_menu, menu);
+
+        //disable save_button if observation is online
+        if(mCurrentWebfaunaObservation.isOnline()) {
+            MenuItem saveButton = menu.findItem(R.id.action_save);
+            if(saveButton != null) {
+                saveButton.setEnabled(false);
+            }
+        }
     }
 
     @Override
@@ -241,9 +258,26 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
                                 mSpeciesField.setDisabled(true);
                             }
 
+                        /*add identificationmethods*/
+                            /*if group is already set in observation -> activate identificationmethodField else: disable*/
+                            if (mCurrentWebfaunaObservation.getWebfaunaGroup() != null && mCurrentWebfaunaObservation.getWebfaunaGroup().getRestID() != null) {
+                                //get identificationMethod for group
+                                ArrayList<ULOneFieldListItemModel> observationMethodListElements = ULOneFieldListItemModel.getListWithItemData(DataDispatcher.getInstantce().getIdentificationMethodRealm(mCurrentWebfaunaObservation.getWebfaunaGroup()).getRealmValues());
+                                if(observationMethodListElements != null) {
+                                    mObservationMethodField.setListItems(observationMethodListElements);
+                                }
+                                mObservationMethodField.setDisabled(false);
+                            } else {
+                                mObservationMethodField.setDisabled(true);
+                            }
+
                             mCurrentWebfaunaObservation.setWebfaunaSpecies(null);
                             mSpeciesField.setCurrentSelection(null);
                             mSpeciesField.setMarking(GDCDataField.GDCDataFieldMarking.MARKED_AS_INVALID);
+
+                            mCurrentWebfaunaObservation.setIdentificationMethod(null);
+                            mObservationMethodField.setCurrentSelection(null);
+                            mObservationMethodField.setMarking(GDCDataField.GDCDataFieldMarking.MARKED_AS_INVALID);
                         }
                     }else {
                         mCurrentWebfaunaObservation.setWebfaunaGroup(null);
@@ -390,26 +424,22 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
     }
 
     protected void saveObservation() {
+
         /*check if logged in*/
 
         WebfaunaValidationResult validationResult = mCurrentWebfaunaObservation.getValidationResult(getResources());
         if (validationResult.isValid()) {
-            if(SettingsManager.getInstance().getUser() != null) {
-                if (mIsInEditMode) {
-                    DataDispatcher.getInstantce().editObservation(mCurrentWebfaunaObservation);
-                } else {
-                    DataDispatcher.getInstantce().addObservation(mCurrentWebfaunaObservation);
-                }
 
-                mDismissCurrentObservation = true;
-                sCurrentWebfaunaObservation = null;
-                mParentActivityCallback.showObservationListFragment();
-
+            if (mIsInEditMode) {
+                DataDispatcher.getInstantce().editObservation(mCurrentWebfaunaObservation);
             } else {
-            /*show login dialog*/
-                mLoginDialog = new LoginDialogFragment();
-                mLoginDialog.show(getChildFragmentManager(), LoginDialogFragment.TAG);
+                DataDispatcher.getInstantce().addObservation(mCurrentWebfaunaObservation);
             }
+
+            mDismissCurrentObservation = true;
+            sCurrentWebfaunaObservation = null;
+            mParentActivityCallback.showObservationListFragment();
+
         } else {
             Resources res = getResources();
 
@@ -538,169 +568,220 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
     }
 
     protected void createMenu() {
+
+        //ObservationTopField
+        mTopField.setOnBtnDateClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListAdapter.toggleVisibilityOfItem(date_data_field_id);
+                mListAdapter.toggleVisibilityOfItem(date_section_field_id);
+            }
+        });
+        mTopField.setOnBtnLocationClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListAdapter.toggleVisibilityOfItem(location_section_field_id);
+                mListAdapter.toggleVisibilityOfItem(location_data_field_id);
+            }
+        });
+        mTopField.setOnBtnFilesClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListAdapter.toggleVisibilityOfItem(files_section_field_id);
+                mListAdapter.toggleVisibilityOfItem(files_data_field_id);
+            }
+        });
+
         ArrayList<GDCDataField> dataFields = new ArrayList<GDCDataField>();
+
+        //tag of the datafields to hide
+        ArrayList<Integer> dataFieldsToHide = new ArrayList<Integer>();
 
         Resources res = getResources();
 
-        //Date-section
-        dataFields.add(new GDCSectionTitleDataField(getActivity(),res.getString(R.string.observation_date_section_title)));
+        if(mParentActivityCallback.getNetworkManager().isConnected() || DataDispatcher.getInstantce().isInitialized()) {
 
-        GDCDateDataField dateDataField = new GDCDateDataField(getActivity(),date_data_field_id,res.getString(R.string.observation_date_title),new GDCDataFieldCallback<Date>() {
-            @Override
-            public void valueChanged(int tag, Date value) {
-                //set date
-                mCurrentWebfaunaObservation.setObservationDate(value);
-            }
-        });
-        //set default value if needed
-        if(mCurrentWebfaunaObservation.getObservationDate() != null) {
-            dateDataField.setDate(mCurrentWebfaunaObservation.getObservationDate());
-        }
-        dataFields.add(dateDataField);
+            //Date-section
+            dataFields.add(new GDCSectionTitleDataField(getActivity(), res.getString(R.string.observation_date_section_title),date_section_field_id));
 
-
-        //location-section
-        dataFields.add(new GDCSectionTitleDataField(getActivity(),res.getString(R.string.observation_location_section_title)));
-        mLocationField = new GDCClickDataField(getActivity(),location_data_field_id,res.getString(R.string.observation_location_title),new GDCClickDataFieldCallback() {
-            @Override
-            public void fieldClicked(int tag) {
-                //show LocationDialog
-                mLocationDialogFragment =  new LocationDialogFragment();
-
-                LocationDialogFragment.ViewModel locationViewModel = null;
-                if(mCurrentWebfaunaObservation.getWebfaunaLocation() != null) {
-                    WebfaunaLocation webfaunaLocation = mCurrentWebfaunaObservation.getWebfaunaLocation();
-                    locationViewModel = new LocationDialogFragment.ViewModel(webfaunaLocation.getLieudit(),webfaunaLocation.getAltitude(),webfaunaLocation.getPrecision());
-                    locationViewModel.mCHx = webfaunaLocation.getSwissCoordinatesX();
-                    locationViewModel.mCHy = webfaunaLocation.getSwissCoordinatesY();
-                    locationViewModel.mLat = webfaunaLocation.getWGSCoordinatesLat();
-                    locationViewModel.mLng = webfaunaLocation.getWGSCoordinatesLng();
-                } else {
-                    locationViewModel = new LocationDialogFragment.ViewModel();
+            GDCDateDataField dateDataField = new GDCDateDataField(getActivity(), date_data_field_id, res.getString(R.string.observation_date_title), new GDCDataFieldCallback<Date>() {
+                @Override
+                public void valueChanged(int tag, Date value) {
+                    //set date
+                    mCurrentWebfaunaObservation.setObservationDate(value);
                 }
-                LocationDialogFragment.Datastore locatiomDatastore = new LocationDialogFragment.Datastore(locationViewModel);
-
-                mLocationDialogFragment.setArguments(locatiomDatastore.getBundle());
-
-                mLocationDialogFragment.show(getChildFragmentManager(), LocationDialogFragment.TAG);
-
+            });
+            //set default value if needed
+            if (mCurrentWebfaunaObservation.getObservationDate() != null) {
+                dateDataField.setDate(mCurrentWebfaunaObservation.getObservationDate());
             }
-        });
-        if(mCurrentWebfaunaObservation.getWebfaunaLocation() == null) {
-            mLocationField.setMarking(GDCDataField.GDCDataFieldMarking.MARKED_AS_INVALID);
-        }
-        dataFields.add(mLocationField);
+            dataFields.add(dateDataField);
 
-        //files-section
-        dataFields.add(new GDCSectionTitleDataField(getActivity(),res.getString(R.string.observation_files_section_title)));
-        dataFields.add(new GDCClickDataField(getActivity(),files_data_field_id,res.getString(R.string.observation_images_title),new GDCClickDataFieldCallback() {
-            @Override
-            public void fieldClicked(int tag) {
-                //show FilesDialog
-                mFilesDialogFragment =  new FilesDialogFragment();
+            //hide fields
+            dataFieldsToHide.add(date_section_field_id);
+            dataFieldsToHide.add(date_data_field_id);
 
-                //pass guid of current observation
-                Bundle bundle = new Bundle();
-                bundle.putString(FilesDialogFragment.BUNDLE_KEY_GUID,mCurrentWebfaunaObservation.getGUID().toString());
 
-                mFilesDialogFragment.setArguments(bundle);
+            //location-section
+            dataFields.add(new GDCSectionTitleDataField(getActivity(), res.getString(R.string.observation_location_section_title),location_section_field_id));
+            mLocationField = new GDCClickDataField(getActivity(), location_data_field_id, res.getString(R.string.observation_location_title), new GDCClickDataFieldCallback() {
+                @Override
+                public void fieldClicked(int tag) {
+                    //show LocationDialog
+                    mLocationDialogFragment = new LocationDialogFragment();
 
-                mFilesDialogFragment.show(getChildFragmentManager(), FilesDialogFragment.TAG);
+                    LocationDialogFragment.ViewModel locationViewModel = null;
+                    if (mCurrentWebfaunaObservation.getWebfaunaLocation() != null) {
+                        WebfaunaLocation webfaunaLocation = mCurrentWebfaunaObservation.getWebfaunaLocation();
+                        locationViewModel = new LocationDialogFragment.ViewModel(webfaunaLocation.getLieudit(), webfaunaLocation.getAltitude(), webfaunaLocation.getPrecision());
+                        locationViewModel.mCHx = webfaunaLocation.getSwissCoordinatesX();
+                        locationViewModel.mCHy = webfaunaLocation.getSwissCoordinatesY();
+                        locationViewModel.mLat = webfaunaLocation.getWGSCoordinatesLat();
+                        locationViewModel.mLng = webfaunaLocation.getWGSCoordinatesLng();
+                    } else {
+                        locationViewModel = new LocationDialogFragment.ViewModel();
+                    }
+                    LocationDialogFragment.Datastore locatiomDatastore = new LocationDialogFragment.Datastore(locationViewModel);
+
+                    mLocationDialogFragment.setArguments(locatiomDatastore.getBundle());
+
+                    mLocationDialogFragment.show(getChildFragmentManager(), LocationDialogFragment.TAG);
+
+                }
+            });
+            if (mCurrentWebfaunaObservation.getWebfaunaLocation() == null) {
+                mLocationField.setMarking(GDCDataField.GDCDataFieldMarking.MARKED_AS_INVALID);
             }
-        }));
+            dataFields.add(mLocationField);
 
-        //species-section
-        dataFields.add(new GDCSectionTitleDataField(getActivity(),res.getString(R.string.observation_species_section_title)));
+            //hide fields
+            dataFieldsToHide.add(location_section_field_id);
+            dataFieldsToHide.add(location_data_field_id);
+
+            //files-section
+            dataFields.add(new GDCSectionTitleDataField(getActivity(), res.getString(R.string.observation_files_section_title), files_section_field_id));
+            dataFields.add(new GDCClickDataField(getActivity(), files_data_field_id, res.getString(R.string.observation_images_title), new GDCClickDataFieldCallback() {
+                @Override
+                public void fieldClicked(int tag) {
+                    //show FilesDialog
+                    mFilesDialogFragment = new FilesDialogFragment();
+
+                    //pass guid of current observation
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FilesDialogFragment.BUNDLE_KEY_GUID, mCurrentWebfaunaObservation.getGUID().toString());
+
+                    mFilesDialogFragment.setArguments(bundle);
+
+                    mFilesDialogFragment.show(getChildFragmentManager(), FilesDialogFragment.TAG);
+                }
+            }));
+
+            //hide fields
+            dataFieldsToHide.add(files_section_field_id);
+            dataFieldsToHide.add(files_data_field_id);
+
+         //species-section
+            dataFields.add(new GDCSectionTitleDataField(getActivity(), res.getString(R.string.observation_species_section_title)));
 
         /*group*/
-        WebfaunaGroup groupDefaultValue = mCurrentWebfaunaObservation.getWebfaunaGroup();
-        ArrayList<ULOneFieldListItemModel> groupListElements = ULOneFieldListItemModel.getListWithItemData(DataDispatcher.getInstantce().getWebfaunaGroups());
-        mGroupField = new GDCListDataField(getActivity(),group_data_field_id,res.getString(R.string.observation_group_title),groupListElements, groupDefaultValue,
-                true,ListView.CHOICE_MODE_SINGLE);
-        if(groupDefaultValue == null) {
-            mGroupField.setMarking(GDCDataField.GDCDataFieldMarking.MARKED_AS_INVALID);
-        }
-        dataFields.add(mGroupField);
+            WebfaunaGroup groupDefaultValue = mCurrentWebfaunaObservation.getWebfaunaGroup();
+            ArrayList<ULImageOneFieldListItemModel> groupListElements = ULImageOneFieldListItemModel.getListWithItemData(DataDispatcher.getInstantce().getWebfaunaGroups());
+            mGroupField = new GDCListDataField(getActivity(), group_data_field_id, res.getString(R.string.observation_group_title), groupListElements, groupDefaultValue,
+                    true, ListView.CHOICE_MODE_SINGLE);
+            if (groupDefaultValue == null) {
+                mGroupField.setMarking(GDCDataField.GDCDataFieldMarking.MARKED_AS_INVALID);
+            }
+            dataFields.add(mGroupField);
 
         /*species*/
-        WebfaunaSpecies speciesDefaultValue = mCurrentWebfaunaObservation.getWebfaunaSpecies();
-        mSpeciesField = new GDCListDataField(getActivity(),species_data_field_id,res.getString(R.string.observation_species_title),new ArrayList<ULListItemModel>(),speciesDefaultValue,
-                true,ListView.CHOICE_MODE_SINGLE);
+            WebfaunaSpecies speciesDefaultValue = mCurrentWebfaunaObservation.getWebfaunaSpecies();
+            mSpeciesField = new GDCListDataField(getActivity(), species_data_field_id, res.getString(R.string.observation_species_title), new ArrayList<ULListItemModel>(), speciesDefaultValue,
+                    true, ListView.CHOICE_MODE_SINGLE);
         /*if group is already set in observation -> activate speciesFiled else: disable*/
-        if(mCurrentWebfaunaObservation.getWebfaunaGroup() != null && mCurrentWebfaunaObservation.getWebfaunaGroup().getRestID() != null) {
-            ArrayList<? extends ULListItemDataModel> speciesOfGroup = DataDispatcher.getInstantce().getSpecies(mCurrentWebfaunaObservation.getWebfaunaGroup().getRestID());
-            if(speciesOfGroup != null) {
-                ArrayList<ULOneFieldListItemModel> speciesListElements = ULOneFieldListItemModel.getListWithItemData(speciesOfGroup);
-                mSpeciesField.setListItems(speciesListElements);
+            if (mCurrentWebfaunaObservation.getWebfaunaGroup() != null && mCurrentWebfaunaObservation.getWebfaunaGroup().getRestID() != null) {
+                ArrayList<? extends ULListItemDataModel> speciesOfGroup = DataDispatcher.getInstantce().getSpecies(mCurrentWebfaunaObservation.getWebfaunaGroup().getRestID());
+                if (speciesOfGroup != null) {
+                    ArrayList<ULOneFieldListItemModel> speciesListElements = ULOneFieldListItemModel.getListWithItemData(speciesOfGroup);
+                    mSpeciesField.setListItems(speciesListElements);
+                }
+            } else {
+                mSpeciesField.setDisabled(true);
             }
-        } else {
-            mSpeciesField.setDisabled(true);
-        }
-        if(speciesDefaultValue == null) {
-            mSpeciesField.setMarking(GDCDataField.GDCDataFieldMarking.MARKED_AS_INVALID);
-        }
-        dataFields.add(mSpeciesField);
+            if (speciesDefaultValue == null) {
+                mSpeciesField.setMarking(GDCDataField.GDCDataFieldMarking.MARKED_AS_INVALID);
+            }
+            dataFields.add(mSpeciesField);
 
         /*identification Method*/
-        WebfaunaRealmValue observationDefaultValue = mCurrentWebfaunaObservation.getIdentificationMethod();
-        ArrayList<ULOneFieldListItemModel> observationMethodListElements = ULOneFieldListItemModel.getListWithItemData(DataDispatcher.getInstantce().getIdentificationMethodRealm().getRealmValues());
-        mObservationMethodField = new GDCListDataField(getActivity(),observation_method_data_field_id,res.getString(R.string.observation_observation_method_title),observationMethodListElements,observationDefaultValue,
-                true,ListView.CHOICE_MODE_SINGLE);
-        dataFields.add(mObservationMethodField);
-        if(observationDefaultValue == null) {
-            mObservationMethodField.setMarking(GDCDataField.GDCDataFieldMarking.MARKED_AS_INVALID);
+            WebfaunaRealmValue observationDefaultValue = mCurrentWebfaunaObservation.getIdentificationMethod();
+            mObservationMethodField = new GDCListDataField(getActivity(), observation_method_data_field_id, res.getString(R.string.observation_observation_method_title), new ArrayList<ULListItemModel>(), observationDefaultValue,
+                    true, ListView.CHOICE_MODE_SINGLE);
+
+            /*if group is already set in observation -> activate identificationmethodField else: disable*/
+            if (mCurrentWebfaunaObservation.getWebfaunaGroup() != null && mCurrentWebfaunaObservation.getWebfaunaGroup().getRestID() != null) {
+                //get identificationMethod for group
+                ArrayList<ULOneFieldListItemModel> observationMethodListElements = ULOneFieldListItemModel.getListWithItemData(DataDispatcher.getInstantce().getIdentificationMethodRealm(mCurrentWebfaunaObservation.getWebfaunaGroup()).getRealmValues());
+                if(observationMethodListElements != null) {
+                    mObservationMethodField.setListItems(observationMethodListElements);
+                }
+            } else {
+                mObservationMethodField.setDisabled(true);
+            }
+            dataFields.add(mObservationMethodField);
+            if (observationDefaultValue == null) {
+                mObservationMethodField.setMarking(GDCDataField.GDCDataFieldMarking.MARKED_AS_INVALID);
+            }
+
+
+            mAbundanceField = new GDCClickDataField(getActivity(), abundance_data_field_id, res.getString(R.string.observation_abundance_title), new GDCClickDataFieldCallback() {
+                @Override
+                public void fieldClicked(int tag) {
+                    //show LocationDialog
+                    mAbundanceDialogFragment = new AbundanceDialogFragment();
+
+                    WebfaunaAbundance abundanceViewModel = null;
+                    if (mCurrentWebfaunaObservation.getWebfaunaAbundance() != null) {
+                        abundanceViewModel = mCurrentWebfaunaObservation.getWebfaunaAbundance();
+                    } else {
+                        abundanceViewModel = new WebfaunaAbundance();
+                    }
+                    AbundanceDialogFragment.Datastore abundanceDatastore = new AbundanceDialogFragment.Datastore(abundanceViewModel);
+
+                    mAbundanceDialogFragment.setArguments(abundanceDatastore.getBundle());
+
+                    mAbundanceDialogFragment.show(getChildFragmentManager(), AbundanceDialogFragment.TAG);
+
+                }
+            });
+
+            dataFields.add(mAbundanceField);
+
+            //environment-section
+            dataFields.add(new GDCSectionTitleDataField(getActivity(), res.getString(R.string.observation_environment_section_title)));
+
+            WebfaunaRealmValue environmentDefaultValue = mCurrentWebfaunaObservation.getEnvironmentRealmValue();
+            ArrayList<ULOneFieldListItemModel> environmentListElements = ULOneFieldListItemModel.getListWithItemData(DataDispatcher.getInstantce().getEnvironmentRealm().getRealmValues());
+            mEnvironmentField = new GDCListDataField(getActivity(), environment_data_field_id, res.getString(R.string.observation_environment_title), environmentListElements, environmentDefaultValue, true, ListView.CHOICE_MODE_SINGLE);
+            dataFields.add(mEnvironmentField);
+
+            WebfaunaRealmValue milieuDefaultValue = mCurrentWebfaunaObservation.getMilieuRealmValue();
+            ArrayList<ULOneFieldListItemModel> milieuListElements = ULOneFieldListItemModel.getListWithItemData(DataDispatcher.getInstantce().getMilieuRealm().getRealmValues());
+            mMilieuField = new GDCListDataField(getActivity(), milieu_data_field_id, res.getString(R.string.observation_milieu_title), milieuListElements, milieuDefaultValue, true, ListView.CHOICE_MODE_SINGLE);
+            dataFields.add(mMilieuField);
+
+            WebfaunaRealmValue structureDefaultValue = mCurrentWebfaunaObservation.getStructureRealmValue();
+            ArrayList<ULOneFieldListItemModel> structureListElements = ULOneFieldListItemModel.getListWithItemData(DataDispatcher.getInstantce().getStructureRealm().getRealmValues());
+            mStructureField = new GDCListDataField(getActivity(), structure_data_field_id, res.getString(R.string.observation_structure_title), structureListElements, structureDefaultValue, true, ListView.CHOICE_MODE_SINGLE);
+            dataFields.add(mStructureField);
+
+            WebfaunaRealmValue substratDefaultValue = mCurrentWebfaunaObservation.getSubstratRealmValue();
+            ArrayList<ULOneFieldListItemModel> substratListElements = ULOneFieldListItemModel.getListWithItemData(DataDispatcher.getInstantce().getSubstratRealm().getRealmValues());
+            mSubstratField = new GDCListDataField(getActivity(), substrat_data_field_id, res.getString(R.string.observation_substrat_title), substratListElements, substratDefaultValue, true, ListView.CHOICE_MODE_SINGLE);
+            dataFields.add(mSubstratField);
         }
 
-
-        mAbundanceField = new GDCClickDataField(getActivity(),abundance_data_field_id,res.getString(R.string.observation_abundance_title),new GDCClickDataFieldCallback() {
-            @Override
-            public void fieldClicked(int tag) {
-                //show LocationDialog
-                mAbundanceDialogFragment =  new AbundanceDialogFragment();
-
-                WebfaunaAbundance abundanceViewModel = null;
-                if(mCurrentWebfaunaObservation.getWebfaunaAbundance() != null) {
-                    abundanceViewModel = mCurrentWebfaunaObservation.getWebfaunaAbundance();
-                } else {
-                    abundanceViewModel = new WebfaunaAbundance();
-                }
-                AbundanceDialogFragment.Datastore abundanceDatastore = new AbundanceDialogFragment.Datastore(abundanceViewModel);
-
-                mAbundanceDialogFragment.setArguments(abundanceDatastore.getBundle());
-
-                mAbundanceDialogFragment.show(getChildFragmentManager(), AbundanceDialogFragment.TAG);
-
-            }
-        });
-
-        dataFields.add(mAbundanceField);
-
-        //environment-section
-        dataFields.add(new GDCSectionTitleDataField(getActivity(),res.getString(R.string.observation_environment_section_title)));
-
-        WebfaunaRealmValue environmentDefaultValue = mCurrentWebfaunaObservation.getEnvironmentRealmValue();
-        ArrayList<ULOneFieldListItemModel> environmentListElements = ULOneFieldListItemModel.getListWithItemData(DataDispatcher.getInstantce().getEnvironmentRealm().getRealmValues());
-        mEnvironmentField = new GDCListDataField(getActivity(),environment_data_field_id,res.getString(R.string.observation_environment_title),environmentListElements,environmentDefaultValue,true,ListView.CHOICE_MODE_SINGLE);
-        dataFields.add(mEnvironmentField);
-
-        WebfaunaRealmValue milieuDefaultValue = mCurrentWebfaunaObservation.getMilieuRealmValue();
-        ArrayList<ULOneFieldListItemModel> milieuListElements = ULOneFieldListItemModel.getListWithItemData(DataDispatcher.getInstantce().getMilieuRealm().getRealmValues());
-        mMilieuField = new GDCListDataField(getActivity(),milieu_data_field_id,res.getString(R.string.observation_milieu_title),milieuListElements,milieuDefaultValue,true,ListView.CHOICE_MODE_SINGLE);
-        dataFields.add(mMilieuField);
-
-        WebfaunaRealmValue structureDefaultValue = mCurrentWebfaunaObservation.getStructureRealmValue();
-        ArrayList<ULOneFieldListItemModel> structureListElements = ULOneFieldListItemModel.getListWithItemData(DataDispatcher.getInstantce().getStructureRealm().getRealmValues());
-        mStructureField = new GDCListDataField(getActivity(),structure_data_field_id,res.getString(R.string.observation_structure_title),structureListElements,structureDefaultValue,true,ListView.CHOICE_MODE_SINGLE);
-        dataFields.add(mStructureField);
-
-        WebfaunaRealmValue substratDefaultValue = mCurrentWebfaunaObservation.getSubstratRealmValue();
-        ArrayList<ULOneFieldListItemModel> substratListElements = ULOneFieldListItemModel.getListWithItemData(DataDispatcher.getInstantce().getSubstratRealm().getRealmValues());
-        mSubstratField = new GDCListDataField(getActivity(),substrat_data_field_id,res.getString(R.string.observation_substrat_title),substratListElements,substratDefaultValue,true,ListView.CHOICE_MODE_SINGLE);
-        dataFields.add(mSubstratField);
-
-
         /*create listadapter*/
-        mListAdapter = new GDCListAdapter(dataFields);
+        mListAdapter = new GDCHideableListAdapter(dataFields, dataFieldsToHide);
         mListView.setAdapter(mListAdapter);
     }
 
@@ -733,13 +814,5 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
         }
     }
 
-    /*LoginDialogFragment.Callback*/
 
-    @Override
-    public void logIn(WebfaunaUser user) {
-    }
-
-    @Override
-    public void logOut() {
-    }
 }

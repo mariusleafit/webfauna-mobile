@@ -36,7 +36,8 @@ public class WebfaunaLocation extends WebfaunaBaseModel implements WebfaunaValid
         if(toCopy == null)
             toCopy = new WebfaunaLocation();
         mCountryCode = toCopy.mCountryCode;
-        mPrecision = new WebfaunaRealmValue(toCopy.mPrecision);
+        if(toCopy.mPrecision != null)
+            mPrecision = new WebfaunaRealmValue(toCopy.mPrecision);
         mLieudit = toCopy.mLieudit;
         mSwissCoordinatesX = toCopy.mSwissCoordinatesX;
         mSwissCoordinatesY = toCopy.mSwissCoordinatesY;

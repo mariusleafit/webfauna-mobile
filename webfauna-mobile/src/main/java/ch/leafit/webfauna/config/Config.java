@@ -2,6 +2,7 @@ package ch.leafit.webfauna.config;
 
 import android.graphics.Color;
 import ch.leafit.gdc.GDCDefaultStyleConfig;
+import ch.leafit.webfauna.R;
 import ch.leafit.webfauna.gdc.styles.*;
 
 import java.util.ArrayList;
@@ -11,7 +12,8 @@ import java.util.ArrayList;
  */
 public final class Config {
 
-    public static boolean debug;
+    public static final boolean debug = false;
+    public static final boolean useSelfSignedSSLCerts = false;
 
     /*colors*/
     public static int actionBarColor;
@@ -72,9 +74,12 @@ public final class Config {
     public static final int OBSERVATION_IMAGE_HEIGHT = 360;
     public static final int OBSERVATION_IMAGE_WIDTH = 640;
 
-    static {
-        debug = true;
+    /*width of the displayed rectancle on the caching view in m*/
+    public static final int CACHING_RECTANGLE_WIDTH_M = 3000;
+    public static final int NUMBER_OF_SQUARES_CACHEABLE_AT_SAME_TIME = 5;
+    public static final int LOCKED_ZOOMLEVEL_IN_OFFLINE_MODE = 17;
 
+    static {
         /*set default Styles of GDC*/
         GDCDefaultStyleConfig.clickDataFieldDefaultStyle = new GDCClickDataFieldStyle();
         GDCDefaultStyleConfig.dateDataFieldDefaultStyle = new GDCDateDataFieldStyle();
@@ -103,7 +108,7 @@ public final class Config {
 
         /*Webfauna-Webservice stuff*/
         if(debug) {
-            webfaunaWebserviceBaseURL = "https://webfauna-api-test.cscf.ch/api/v1/";
+            webfaunaWebserviceBaseURL = "http://webfauna-api-test.cscf.ch/api/v1/";
         } else {
             webfaunaWebserviceBaseURL = "https://webfauna-api.cscf.ch/api/v1/";
         }
@@ -111,17 +116,17 @@ public final class Config {
 
         neededWebfaunaGroups = new ArrayList<NeededWebfaunaGroup>();
         /*Mammifières*/
-        neededWebfaunaGroups.add(new NeededWebfaunaGroup("4",-1));
+        neededWebfaunaGroups.add(new NeededWebfaunaGroup("4", R.drawable.mammifere));
         /*Amphibiens*/
-        neededWebfaunaGroups.add(new NeededWebfaunaGroup("2",-1));
+        neededWebfaunaGroups.add(new NeededWebfaunaGroup("2",R.drawable.amphibien));
         /*Reptiles*/
-        neededWebfaunaGroups.add(new NeededWebfaunaGroup("3",-1));
+        neededWebfaunaGroups.add(new NeededWebfaunaGroup("3",R.drawable.reptile));
         /*Libellules*/
-        neededWebfaunaGroups.add(new NeededWebfaunaGroup("22",-1));
+        neededWebfaunaGroups.add(new NeededWebfaunaGroup("22",R.drawable.odo));
         /*Orthoptères*/
-        neededWebfaunaGroups.add(new NeededWebfaunaGroup("23",-1));
+        neededWebfaunaGroups.add(new NeededWebfaunaGroup("23",R.drawable.ortho));
         /*Lépidoptères*/
-        neededWebfaunaGroups.add(new NeededWebfaunaGroup("30",-1));
+        neededWebfaunaGroups.add(new NeededWebfaunaGroup("30",R.drawable.pap));
     }
 
     public static void init() {

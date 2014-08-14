@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 import ch.leafit.ul.list_items.ULListItemDataModel;
+import ch.leafit.webfauna.data.settings.SettingsManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,6 +12,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 
 /**
  * Created by marius on 09/07/14.
@@ -41,7 +43,8 @@ public class WebfaunaSpecies extends WebfaunaBaseModel implements ULListItemData
         mFamily = toCopy.mFamily;
         mGenus = toCopy.mGenus;
         mSpecies = toCopy.mSpecies;
-        mVernacularNames = new HashMap<String, String>(toCopy.mVernacularNames);
+        if(toCopy.mVernacularNames != null)
+            mVernacularNames = new HashMap<String, String>(toCopy.mVernacularNames);
         mSubSpecies = toCopy.mSubSpecies;
     }
 
@@ -168,7 +171,8 @@ public class WebfaunaSpecies extends WebfaunaBaseModel implements ULListItemData
 
     @Override
     public String getTitle() {
-        return getTitle("en");
+        Locale currentLocale = SettingsManager.getInstance().getLocale();
+        return getTitle(currentLocale.getLanguage());
     }
 
     @Override

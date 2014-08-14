@@ -9,32 +9,35 @@
         <item>Impostazioni</item>
         <item>A proposito</item>
     </string-array>
-    <string name="access_menu_drawer_open">Open navigation drawer</string>
-    <string name="access_menu_drawer_close">Close navigation drawer</string>
+    <string name="access_menu_drawer_open">Aprire il menu</string>
+    <string name="access_menu_drawer_close">Chiudi menu</string>
 
-    <string name="retry">retry</string>
-    <string name="save">Save</string>
-    <string name="remove">Remove</string>
-    <string name="upload">Upload</string>
+    <string name="retry">Riprovare</string>
+    <string name="save">Salvare</string>
+    <string name="remove">Rimuovere</string>
+    <string name="upload">Caricare</string>
     <string name="settings">Impostazioni</string>
+    <string name="name">Nome</string>
 
+    <string name="selectAll">tutto</string>
+    <string name="deselectAll">niente</string>
 
     <!--GPS-->
-    <string name="gps_disabled_dialog_title">GPS is disabled</string>
-    <string name="gps_disabled_dialog_message">GPS is not enabled. Do you want to go to settings menu?</string>
+    <string name="gps_disabled_dialog_title">GPS è disabilitato</string>
+    <string name="gps_disabled_dialog_message">GPS non è abilitato. Vuoi andare al menu impostazioni?</string>
 
     <string name="coordinate_field_ch03">CH03</string>
     <string name="coordinate_field_wgs">WGS84</string>
 
     <!-- Observation -->
     <string name="observation_download_progress_dialog_title">Caricare..</string>
-    <string name="observation_download_progress_dialog_message">Updating webfauna data..</string>
+    <string name="observation_download_progress_dialog_message">Aggiornamento dei dati webfauna..</string>
 
-    <string name="observation_cancel_areyousure_dialog_title">Dismiss changes?</string>
+    <string name="observation_cancel_areyousure_dialog_title">Respingere le modifiche?</string>
     <string name="observation_cancel_areyousure_dialog_positive_button">Sì</string>
     <string name="observation_cancel_areyousure_dialog_negative_button">No</string>
 
-    <string name="observation_validation_dialog_title">Observation invalid</string>
+    <string name="observation_validation_dialog_title">Osservazione non valido</string>
 
 
     <string name="observation_date_section_title">Data</string>
@@ -44,13 +47,13 @@
     <string name="observation_location_title">Luogo dell\'osservazione</string>
 
     <string name="observation_files_section_title">File</string>
-    <string name="observation_images_title">Images</string>
+    <string name="observation_images_title">Immagini</string>
 
     <string name="observation_species_section_title">Species</string>
     <string name="observation_group_title">Gruppo</string>
     <string name="observation_species_title">Specie</string>
     <string name="observation_observation_method_title">Metodo d\'identificazione</string>
-    <string name="observation_abundance_title">Abundance</string>
+    <string name="observation_abundance_title">Abbondanze</string>
 
     <string name="observation_environment_section_title">Ambiente</string>
     <string name="observation_environment_title">Ambiente</string>
@@ -70,7 +73,7 @@
     <string name="location_validation_lieudit_null">L\'inserimento del toponimo è obbligatorio</string>
     <string name="location_validation_lieudit_tolong">Il nome della località non deve essere di più di 60 caratteri</string>
     <string name="location_validation_altitude_invalid">L\'altitudine non deve essere superiore a 5000 m</string>
-    <string name="location_validation_coordinates_null">coordinates are mandatory</string>
+    <string name="location_validation_coordinates_null">L\'inserimento delle coordinates è obbligatorio</string>
 
     <string name="observation_validation_date_null">L\'inserimento della data è obbligatorio</string>
     <string name="observation_validation_date_invalid">I dati devono essere compresi tra gennaio 1900 e oggi</string>
@@ -96,14 +99,14 @@
     <string name="observation_list_areyousure_dialog_negative_button">No</string>
 
     <string name="observation_list_upload_progress_dialog_title">Caricare..</string>
-    <string name="observation_list_upload_progress_dialog_message">Caricare Observations..</string>
+    <string name="observation_list_upload_progress_dialog_message">Caricare osservazioni..</string>
     <string name="observation_list_upload_error_dialog_message">Le osservazioni restanti non sono state salvate, riprova</string>
-    <string name="observation_list_offline_alert_dialog_message">Cannot upload Observation, device is offline</string>
+    <string name="observation_list_offline_alert_dialog_message">Impossibile caricare osservazione, il dispositivo è offline</string>
 
 
     <!--Preferenes-->
     <string name="prefenrences_login_field_title">Login</string>
-    <string name="prefenrences_locale_field_title">Language</string>
+    <string name="prefenrences_locale_field_title">Lingua</string>
 
     <!--Login dialog-->
     <string name="login_dialog_title">Login</string>
@@ -113,11 +116,11 @@
     <string name="login_dialog_btnlogout_title">Logout</string>
     <string name="login_dialog_progress_dialog_title">Login</string>
     <string name="login_dialog_progress_dialog_message">Caricare...</string>
-    <string name="login_dialog_error_dialog_message">Couldn\'t Log in, are your credentials correct?</string>
+    <string name="login_dialog_error_dialog_message">Impossibile accedere, sono le credenziali corrette?</string>
 
     <!--Files dialog-->
-    <string name="files_dialog_btnadd_title">Add</string>
-    <string name="files_error_dialog_message">Could not add Image, please try again!</string>
+    <string name="files_dialog_btnadd_title">Aggiungere</string>
+    <string name="files_error_dialog_message">Impossibile aggiungere immagine, si prega di riprovare!</string>
 
 
     <!--offline mode dialog-->
@@ -125,11 +128,19 @@
 
 
     <!--about-->
-    <string name="about_version">Version: 1.1</string>
+    <string name="about_version">Version: 1.2 - 31.07.2014</string>
     <string name="about_description">Webfauna è una piattaforma di digitalizzazione on-line a maschere che ha lo scopo di raccogliere le osservazioni faunistiche svizzere e delle regioni limitrofe. Questo server è utilizzabile per tutta la fauna svizzera ad eccezione degli uccelli.
-        Webfauna è lo strumento principale di raccolta dei dati faunistici del Centro Svizzero di Cartografia della Fauna  (CSCF) e del Centro di coordinamento per la protezione degli Anfibi e dei Rettili in Svizzera KARCH.</string>
+        Webfauna è lo strumento del Centro Svizzero di Cartografia della Fauna  (CSCF) e del Centro di coordinamento per la protezione degli Anfibi e dei Rettili in Svizzera KARCH.</string>
     <string name="about_email">secretariat.cscf@unine.ch</string>
     <string name="about_website">http://www.cscf.ch</string>
     <string name="about_copyright">Copyright CSCF 2014</string>
+
+    <!--offline map-->
+    <string name="clear_offline_map_sections_message">Cancella la cache mappa?</string>
+    <string name="offline_map_progress_title">Download di piastrelle...</string>
+    <string name="offline_map_progress_message">Questo può richiedere diversi minuti. Rimanendo piastrelle</string>
+    <string name="offline_map_retry_dialog_message">Riprova?</string>
+    <string name="offline_map_to_much_squares">Non si può nascondere più di 5 quadrati allo stesso tempo!</string>
+    <string name="offline_map_number_of_tiles">Il download può richiedere fino a 100MB, sei sicuro?</string>
 
 </resources>

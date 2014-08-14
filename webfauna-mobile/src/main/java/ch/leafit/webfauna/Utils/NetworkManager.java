@@ -9,6 +9,8 @@ import android.util.Log;
 
 /**
  * Created by marius on 21/07/14.
+ *
+ * tracks changes in network-connection-status
  */
 public class NetworkManager extends BroadcastReceiver {
     private static final String LOG = "ConnectivityManager";

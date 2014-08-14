@@ -9,15 +9,18 @@
         <item>Einstellungen</item>
         <item>Über</item>
     </string-array>
-    <string name="access_menu_drawer_open">Open navigation drawer</string>
-    <string name="access_menu_drawer_close">Close navigation drawer</string>
+    <string name="access_menu_drawer_open">Menu öffnen</string>
+    <string name="access_menu_drawer_close">Menu schliessen</string>
 
     <string name="retry">erneut versuchen</string>
     <string name="save">Speichern</string>
     <string name="remove">Löschen</string>
     <string name="upload">Hochladen</string>
     <string name="settings">Einstellungen</string>
+    <string name="name">Name</string>
 
+    <string name="selectAll">Alle</string>
+    <string name="deselectAll">Keine</string>
 
     <!--GPS-->
     <string name="gps_disabled_dialog_title">GPS ist deaktiviert</string>
@@ -34,7 +37,7 @@
     <string name="observation_cancel_areyousure_dialog_positive_button">Ja</string>
     <string name="observation_cancel_areyousure_dialog_negative_button">Nein</string>
 
-    <string name="observation_validation_dialog_title">Observation nicht valid</string>
+    <string name="observation_validation_dialog_title">ungültige Beobachtung</string>
 
 
     <string name="observation_date_section_title">Datum</string>
@@ -81,8 +84,8 @@
 
     <string name="abundance_dialog_title">Individuenzahl</string>
     <string name="abundance_individuals_title">Individuenzahl</string>
-    <string name="abundance_males_title"># of Männchen</string>
-    <string name="abundance_females_title"># of Weibchen</string>
+    <string name="abundance_males_title">Anzahl Männchen</string>
+    <string name="abundance_females_title">Anzahl Weibchen</string>
     <string name="abundance_eggs_title">Anzahl Eier</string>
     <string name="abundance_larves_title">Anzahl Larven</string>
     <string name="abundance_youngs_title">Anzahl Juvenile</string>
@@ -96,9 +99,9 @@
     <string name="observation_list_areyousure_dialog_negative_button">Nein</string>
 
     <string name="observation_list_upload_progress_dialog_title">Hochladen..</string>
-    <string name="observation_list_upload_progress_dialog_message">Lade Observationen hoch..</string>
-    <string name="observation_list_upload_error_dialog_message">Die restlichen Beobachtungen konnten nicht gespeichert werden, bitte versuchen Sie es erneut!</string>
-    <string name="observation_list_offline_alert_dialog_message">Kann nichts hochladen, das Gerät ist offline</string>
+    <string name="observation_list_upload_progress_dialog_message">Beobachtung wird hochgeladen..</string>
+    <string name="observation_list_upload_error_dialog_message">Die restlichen Beobachtungen konnten nicht hochgeladen werden, bitte versuchen Sie es erneut!</string>
+    <string name="observation_list_offline_alert_dialog_message">Das Gerät ist offline, Beobachtungen können nicht hochgeladen werden</string>
 
 
     <!--Preferenes-->
@@ -117,18 +120,28 @@
 
     <!--Files dialog-->
     <string name="files_dialog_btnadd_title">Hinzufügen</string>
-    <string name="files_error_dialog_message">Konnte das Bild nicht laden, bitte erneut versuchen!</string>
+    <string name="files_error_dialog_message">Das Bild konnte nicht geladen werden, bitte erneut versuchen!</string>
 
 
     <!--offline mode dialog-->
-    <string name="offline_mode_dialog_message">Webfauna befindet sich im offline Modus, abgesehen vom Observations-Upload können Sie die App normal verwenden.</string>
+    <string name="offline_mode_dialog_message">Das Gerät ist offline. Ausser Beobachtungen hochladen, können Sie die App normal verwenden.</string>
 
 
     <!--about-->
-    <string name="about_version">Version: 1.1</string>
+    <string name="about_version">Version: 1.2 - 31.07.2014</string>
     <string name="about_description">Webfauna ist eine Online-Erfassungsmaske für Beobachtungen der Wildfauna in der Schweiz und im angrenzenden Ausland. Erfasst werden alle Tierarten ausser den Vögeln.
-        Webfauna ist eine Plattform zur Erfassung von Beobachtungen der Tierarten, die vom Schweizer Zentrum für die Kartographie (SZKF/CSCF) und der Koordinationsstelle für Amphibien- und Reptilienschutz in der Schweiz KARCH betreut werden.</string>
+        Webfauna ist die Plattform des Schweizer Zentrums für die Kartographie (SZKF/CSCF) und der Koordinationsstelle für Amphibien- und Reptilienschutz in der Schweiz KARCH</string>
     <string name="about_email">secretariat.cscf@unine.ch</string>
     <string name="about_website">http://www.cscf.ch</string>
     <string name="about_copyright">Copyright CSCF 2014</string>
+
+    <!--offline map-->
+    <string name="clear_offline_map_sections_message">Map Cache leeren?</string>
+    <string name="offline_map_progress_title">Tiles herunterladen...</string>
+    <string name="offline_map_progress_message">Dieser Vorgang kann einige Minuten Dauern. Verbleibende Tiles : </string>
+    <string name="offline_map_retry_dialog_message">Nochmals versuchen?</string>
+    <string name="offline_map_to_much_squares">Sie können nicht mehr als 5 Quadrate gleichzeitig cachen!</string>
+    <string name="offline_map_number_of_tiles">Der Download kann bis zu 100MB benötigen. Fortfahren?</string>
+
+
 </resources>

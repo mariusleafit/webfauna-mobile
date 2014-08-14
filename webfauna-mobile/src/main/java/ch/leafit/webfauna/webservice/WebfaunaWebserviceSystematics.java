@@ -43,7 +43,7 @@ public final class WebfaunaWebserviceSystematics {
             HttpResponse response;
             try {
                 //accept all certificates if debug is enabled
-                if(Config.debug) {
+                if(Config.useSelfSignedSSLCerts) {
                     // Accept all certificate
                     KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
                     trustStore.load(null, null);
@@ -66,14 +66,16 @@ public final class WebfaunaWebserviceSystematics {
                 BasicHttpContext localContext = new BasicHttpContext();
                 response = httpClient.execute(new HttpGet(url), localContext);
 
+                 /* get string response*/
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                response.getEntity().writeTo(out);
+                out.close();
+                String responseString = out.toString();
+                Log.i("Webservice","Group-Response:" + responseString);
+
                 /*check if request went well*/
                 StatusLine statusLine = response.getStatusLine();
                 if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
-                    /* get string response*/
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    response.getEntity().writeTo(out);
-                    out.close();
-                    String responseString = out.toString();
 
                     /*parse JSON*/
                     try{
@@ -123,7 +125,7 @@ public final class WebfaunaWebserviceSystematics {
             HttpResponse response;
             try {
                 //accept all certificates if debug is enabled
-                if(Config.debug) {
+                if(Config.useSelfSignedSSLCerts) {
                     // Accept all certificate
                     KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
                     trustStore.load(null, null);
@@ -146,15 +148,16 @@ public final class WebfaunaWebserviceSystematics {
                 BasicHttpContext localContext = new BasicHttpContext();
                 response = httpClient.execute(new HttpGet(url), localContext);
 
+                 /* get string response*/
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                response.getEntity().writeTo(out);
+                out.close();
+                String responseString = out.toString();
+                Log.i("Webservice","Species-Response:" + responseString);
+
                 /*check if request went well*/
                 StatusLine statusLine = response.getStatusLine();
                 if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
-                    /* get string response*/
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    response.getEntity().writeTo(out);
-                    out.close();
-                    String responseString = out.toString();
-
                     /*parse JSON*/
                     try{
                         JSONObject parsedJSON = new JSONObject(responseString);

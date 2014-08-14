@@ -272,6 +272,30 @@ public final class DataDispatcher implements GetSystematicsAsyncTask.Callback, G
         return mIdentificationMethodRealm;
     }
 
+    /**
+     *
+     * @return IdentificationMethods applicable for a given WebfaunaGroup
+     */
+    public WebfaunaRealm getIdentificationMethodRealm(WebfaunaGroup group) {
+        WebfaunaRealm returnRealm = null;
+
+        if(mIdentificationMethodRealm != null && group != null) {
+            returnRealm = new WebfaunaRealm(mIdentificationMethodRealm);
+
+            //get applicable realmValues
+            ArrayList<WebfaunaRealmValue> applicableRealmValues = new ArrayList<WebfaunaRealmValue>();
+            for(WebfaunaRealmValue realmValue: mIdentificationMethodRealm.getRealmValues()) {
+                if(group.getValidIdentificationMethodRestIDs().contains(realmValue.getRestID()))
+                    applicableRealmValues.add(realmValue);
+            }
+
+            returnRealm.setRealmValues(applicableRealmValues);
+        }
+
+        return returnRealm;
+    }
+
+
     public WebfaunaRealm getPrecisionRealm() {
         return mPrecisionRealm;
     }
@@ -490,6 +514,14 @@ public final class DataDispatcher implements GetSystematicsAsyncTask.Callback, G
         List<DBGroup> dbGroups = dbManager.getGroups();
         for(DBGroup dbGroup: dbGroups) {
             WebfaunaGroup webfaunaGroup = ModelMapper.getWebfaunaGroup(dbGroup);
+
+            for(Config.NeededWebfaunaGroup group: Config.neededWebfaunaGroups ) {
+                if(webfaunaGroup.getRestID().equals(group.groupRestID)) {
+                    webfaunaGroup.setLocalImageResID(group.localImageResId);
+                    break;
+                }
+            }
+
             if(webfaunaGroup != null) {
                 mWebfaunaGroups.add(webfaunaGroup);
 

@@ -63,7 +63,7 @@ public class WebfaunaWebserviceObservation {
                 HttpResponse response;
                 try {
                     //accept all certificates if debug is enabled
-                    if (Config.debug) {
+                    if (Config.useSelfSignedSSLCerts) {
                         // Accept all certificate
                         KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
                         trustStore.load(null, null);
@@ -116,18 +116,17 @@ public class WebfaunaWebserviceObservation {
 
                         response = httpClient.execute(httpPost, localContext);
 
+                         /* get string response*/
+                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        response.getEntity().writeTo(out);
+                        out.close();
+                        String responseString = out.toString();
+                        Log.i("Webservice","Observation-Response:" + responseString);
+
                         /*check if request went well*/
                         StatusLine statusLine = response.getStatusLine();
                         /*observation added properly*/
                         if (statusLine.getStatusCode() == 201) {
-                        /* get string response*/
-                            ByteArrayOutputStream out = new ByteArrayOutputStream();
-                            response.getEntity().writeTo(out);
-                            out.close();
-                            String responseString = out.toString();
-
-                            Log.i("JSONsuccss:", responseString);
-
                             //get RESTID
                             JSONObject parsedJSON = new JSONObject(responseString);
 
@@ -138,13 +137,11 @@ public class WebfaunaWebserviceObservation {
                                     JSONObject resultJSON = resource.getJSONObject(0);
                                     if(resultJSON != null && resultJSON.has("REST-ID")) {
                                         returnRestID = resultJSON.getString("REST-ID");
+
+                                        Log.i("WebfaunaWebserviceObservatoin","sent Observation RestID:" + returnRestID);
                                     }
                                 }
                             }
-
-
-
-
 
                         } else {
                             response.getEntity().getContent().close();

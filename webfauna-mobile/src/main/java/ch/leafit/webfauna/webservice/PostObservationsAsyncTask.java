@@ -6,7 +6,6 @@ import ch.leafit.webfauna.Utils.OutParam;
 import ch.leafit.webfauna.data.DataDispatcher;
 import ch.leafit.webfauna.models.WebfaunaObservation;
 import ch.leafit.webfauna.models.WebfaunaObservationFile;
-import com.sun.javaws.exceptions.InvalidArgumentException;
 
 import java.util.ArrayList;
 
@@ -24,7 +23,7 @@ public class PostObservationsAsyncTask extends AsyncTask<Void,Void,Void> {
     private String mUsername;
     private String mPassword;
 
-    public PostObservationsAsyncTask(Callback callback, ArrayList<WebfaunaObservation> observations, String username, String password) throws InvalidArgumentException{
+    public PostObservationsAsyncTask(Callback callback, ArrayList<WebfaunaObservation> observations, String username, String password) throws Exception{
         if(callback != null && observations != null) {
             mCallback = callback;
             mObservationsToUpload = observations;
@@ -32,7 +31,7 @@ public class PostObservationsAsyncTask extends AsyncTask<Void,Void,Void> {
             mUsername = username;
             mPassword = password;
         } else {
-            throw new InvalidArgumentException(new String[]{"PostObsrvationAsyncTask:","Argument is null"});
+            throw new Exception("PostObsrvationAsyncTask: + Argument is null");
         }
     }
 
@@ -45,19 +44,27 @@ public class PostObservationsAsyncTask extends AsyncTask<Void,Void,Void> {
                 OutParam<Exception> outEx = new OutParam<Exception>();
                 String addedObservationRestID = WebfaunaWebserviceObservation.postObservationToWebservice(observation.getGUID().toString(),outEx, mUsername, mPassword);
                 if(observation.getGUID() != null && addedObservationRestID != null) {
-                    /*delete from DataDispatcher*/
-                    DataDispatcher.getInstantce().deleteObservation(observation.getGUID().toString());
+                    /*//set is online*/
+                    //DataDispatcher.getInstantce().deleteObservation(observation.getGUID().toString());
+                    observation.setIsOnline(true);
+                    DataDispatcher.getInstantce().editObservation(observation);
 
                     //post images of posted observation
                     ArrayList<WebfaunaObservationFile> files = (ArrayList<WebfaunaObservationFile>)DataDispatcher.getInstantce().getObservationFiles(observation.getGUID().toString());
                     for(WebfaunaObservationFile file: files) {
                         OutParam<Exception> outExForFile = new OutParam<Exception>();
-                        WebfaunaWebserviceObservationFile.postObservationFileToWebservice(file.getData(),addedObservationRestID, outExForFile, mUsername, mPassword);
+
+                        //retry once
+                        if(!WebfaunaWebserviceObservationFile.postObservationFileToWebservice(file.getData(),addedObservationRestID, outExForFile, mUsername, mPassword))
+                            WebfaunaWebserviceObservationFile.postObservationFileToWebservice(file.getData(),addedObservationRestID, outExForFile, mUsername, mPassword);
+
+                        /*option: error handling if only file-upload failed */
 
                         if(outExForFile.getValue() != null) {
                             Log.e("PostObservationAsyncTask","Could not post image", outExForFile.getValue());
                         } else {
-                            DataDispatcher.getInstantce().deleteObservationFile(file.getGUID().toString());
+
+                            //DataDispatcher.getInstantce().deleteObservationFile(file.getGUID().toString());
                         }
 
 

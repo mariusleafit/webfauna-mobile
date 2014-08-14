@@ -35,6 +35,8 @@ public class WebfaunaObservation extends WebfaunaBaseModel implements WebfaunaVa
     private WebfaunaAbundance mAbundance;
     private WebfaunaSource mSource;
 
+    private boolean mIsOnline;
+
     public WebfaunaObservation() {
         mEnvironment = new WebfaunaEnvironment();
         mSource = WebfaunaSource.getConstSource();
@@ -62,16 +64,27 @@ public class WebfaunaObservation extends WebfaunaBaseModel implements WebfaunaVa
         if(toCopy == null)
             toCopy = new WebfaunaObservation();
 
-        mGUID = toCopy.mGUID;
+        if(toCopy.mGUID != null)
+            mGUID = UUID.fromString(toCopy.mGUID.toString());
 
-        mWebfaunaGroup = new WebfaunaGroup(toCopy.mWebfaunaGroup);
-        mWebfaunaSpecies = new WebfaunaSpecies(toCopy.mWebfaunaSpecies);
-        mIdentificationMethod = new WebfaunaRealmValue(toCopy.mIdentificationMethod);
-        mObservationDate = (Date) toCopy.mObservationDate.clone();
-        mEnvironment = new WebfaunaEnvironment(toCopy.mEnvironment);
-        mLocation = new WebfaunaLocation(toCopy.mLocation);
-        mAbundance = new WebfaunaAbundance(toCopy.mAbundance);
-        mSource = new WebfaunaSource(toCopy.mSource);
+        if(toCopy.mWebfaunaGroup != null)
+            mWebfaunaGroup = new WebfaunaGroup(toCopy.mWebfaunaGroup);
+        if(toCopy.mWebfaunaSpecies != null)
+            mWebfaunaSpecies = new WebfaunaSpecies(toCopy.mWebfaunaSpecies);
+        if(toCopy.mIdentificationMethod != null)
+            mIdentificationMethod = new WebfaunaRealmValue(toCopy.mIdentificationMethod);
+        if(toCopy.mObservationDate != null)
+            mObservationDate = (Date) toCopy.mObservationDate.clone();
+        if(toCopy.mEnvironment != null)
+            mEnvironment = new WebfaunaEnvironment(toCopy.mEnvironment);
+        if(toCopy.mLocation != null)
+            mLocation = new WebfaunaLocation(toCopy.mLocation);
+        if(toCopy.mAbundance != null)
+            mAbundance = new WebfaunaAbundance(toCopy.mAbundance);
+        if(toCopy.mSource != null)
+            mSource = new WebfaunaSource(toCopy.mSource);
+
+        mIsOnline = toCopy.mIsOnline;
 
         if (mEnvironment == null) {
             mEnvironment = new WebfaunaEnvironment();
@@ -130,35 +143,51 @@ public class WebfaunaObservation extends WebfaunaBaseModel implements WebfaunaVa
     }
 
     public WebfaunaRealmValue getEnvironmentRealmValue() {
-        return mEnvironment.getEnvironment();
+        if(mEnvironment != null)
+            return mEnvironment.getEnvironment();
+        else
+            return null;
     }
 
     public void setEnvironmentRealmValue(WebfaunaRealmValue environmentRealmValue) {
-        mEnvironment.setEnvironment(environmentRealmValue);
+        if(mEnvironment != null)
+            mEnvironment.setEnvironment(environmentRealmValue);
     }
 
     public WebfaunaRealmValue getMilieuRealmValue() {
-        return mEnvironment.getMilieu();
+        if(mEnvironment != null)
+            return mEnvironment.getMilieu();
+        else
+            return null;
     }
 
     public void setMilieuRealmValue(WebfaunaRealmValue milieuRealmValue) {
-        mEnvironment.setMilieu(milieuRealmValue);
+        if(mEnvironment != null)
+            mEnvironment.setMilieu(milieuRealmValue);
     }
 
     public WebfaunaRealmValue getStructureRealmValue() {
-        return mEnvironment.getStructure();
+        if(mEnvironment != null)
+            return mEnvironment.getStructure();
+        else
+            return null;
     }
 
     public void setStructureRealmValue(WebfaunaRealmValue structureRealmValue) {
-        mEnvironment.setStructure(structureRealmValue);
+        if(mEnvironment != null)
+            mEnvironment.setStructure(structureRealmValue);
     }
 
     public WebfaunaRealmValue getSubstratRealmValue() {
-        return mEnvironment.getSubstrat();
+        if(mEnvironment != null)
+            return mEnvironment.getSubstrat();
+        else
+            return null;
     }
 
     public void setSubstratRealmValue(WebfaunaRealmValue substratRealmValue) {
-        mEnvironment.setSubstrat(substratRealmValue);
+        if(mEnvironment != null)
+            mEnvironment.setSubstrat(substratRealmValue);
     }
 
 
@@ -182,6 +211,14 @@ public class WebfaunaObservation extends WebfaunaBaseModel implements WebfaunaVa
         return mSource;
     }
 
+    public void setIsOnline(boolean isOnline) {
+        mIsOnline = isOnline;
+    }
+
+    public boolean isOnline() {
+        return mIsOnline;
+    }
+
     /**
      *
      * */
@@ -195,21 +232,6 @@ public class WebfaunaObservation extends WebfaunaBaseModel implements WebfaunaVa
         }
 
         return returnData;
-    }
-
-    /*
-    Files stuff
-     */
-    public void addFile() {
-
-    }
-
-    public void setFiles() {
-
-    }
-
-    public void clearFiles() {
-
     }
 
     @Override
@@ -347,6 +369,7 @@ public class WebfaunaObservation extends WebfaunaBaseModel implements WebfaunaVa
         private String mTitle;
         private String mSubtitle;
         private boolean mIsSelected;
+        private boolean mIsOnline;
 
         public WebfaunaObservationULListDataModel(Parcel in) {
             readFromParcel(in);
@@ -359,6 +382,7 @@ public class WebfaunaObservation extends WebfaunaBaseModel implements WebfaunaVa
 
 
                 mSubtitle = DateFormat.format("dd-MM-yyyy",observation.getObservationDate()).toString();
+                mIsOnline = observation.isOnline();
             } else {
                 throw new Exception("Cannot create WebfaunaObservationULListDataModel: argument null");
             }
@@ -373,6 +397,13 @@ public class WebfaunaObservation extends WebfaunaBaseModel implements WebfaunaVa
         }
         public void setIsSelected(boolean isSelected) {
             mIsSelected = isSelected;
+        }
+
+        public boolean isOnline(){
+            return mIsOnline;
+        }
+        public void setIsOnline(boolean isOnline) {
+            mIsOnline = isOnline;
         }
         /*
             ULListItemDataModel
@@ -413,6 +444,7 @@ public class WebfaunaObservation extends WebfaunaBaseModel implements WebfaunaVa
             dest.writeString(mTitle);
             dest.writeString(mSubtitle);
             dest.writeByte((byte) (mIsSelected ? 1 : 0));
+            dest.writeByte((byte) (mIsOnline ? 1 : 0));
         }
 
         private void readFromParcel(Parcel in) {
@@ -420,6 +452,7 @@ public class WebfaunaObservation extends WebfaunaBaseModel implements WebfaunaVa
             mTitle = in.readString();
             mSubtitle = in.readString();
             mIsSelected = in.readByte() != 0;
+            mIsOnline = in.readByte() != 0;
         }
 
         public int describeContents() {

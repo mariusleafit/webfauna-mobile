@@ -7,6 +7,8 @@ import ch.leafit.webfauna.models.WebfaunaGroup;
 import ch.leafit.webfauna.models.WebfaunaSpecies;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 /**
@@ -44,6 +46,20 @@ public class GetSystematicsAsyncTask extends AsyncTask<Void,Void,Void> {
                 /*download species*/
                 ArrayList<WebfaunaSpecies> webfaunaSpecieses = WebfaunaWebserviceSystematics.getSpeciesOfGroupFromWebservice(neededWebfaunaGroup.groupRestID,outEx);
                 if(outEx.getValue() == null && webfaunaSpecieses != null) {
+
+                    //sort species
+                    Collections.sort(webfaunaSpecieses,new Comparator<WebfaunaSpecies>() {
+                        @Override
+                        public int compare(WebfaunaSpecies lhs, WebfaunaSpecies rhs) {
+                            if (lhs.getTitle() != null && rhs.getTitle() != null) {
+                                return lhs.getTitle().compareTo(rhs.getTitle());
+                            } else {
+                                return 0;
+                            }
+
+                        }
+                    });
+
                     mWebfaunaSpecies.put(neededWebfaunaGroup.groupRestID,webfaunaSpecieses);
                 } else {
                     mException = outEx.getValue();
@@ -55,6 +71,19 @@ public class GetSystematicsAsyncTask extends AsyncTask<Void,Void,Void> {
                 break;
             }
         }
+
+        //sort groups
+        Collections.sort(mWebfaunaGroups,new Comparator<WebfaunaGroup>() {
+            @Override
+            public int compare(WebfaunaGroup lhs, WebfaunaGroup rhs) {
+                if(lhs.getTitle() != null && rhs.getTitle() != null) {
+                    return lhs.getTitle().compareTo(rhs.getTitle());
+                } else {
+                    return 0;
+                }
+
+            }
+        });
 
         return null;
     }
