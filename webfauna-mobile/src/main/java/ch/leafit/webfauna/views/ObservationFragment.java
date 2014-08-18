@@ -680,7 +680,7 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
             dataFieldsToHide.add(files_section_field_id);
             dataFieldsToHide.add(files_data_field_id);
 
-         //species-section
+            //species-section
             dataFields.add(new GDCSectionTitleDataField(getActivity(), res.getString(R.string.observation_species_section_title)));
 
         /*group*/
@@ -692,6 +692,8 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
                 mGroupField.setMarking(GDCDataField.GDCDataFieldMarking.MARKED_AS_INVALID);
             }
             dataFields.add(mGroupField);
+
+
 
         /*species*/
             WebfaunaSpecies speciesDefaultValue = mCurrentWebfaunaObservation.getWebfaunaSpecies();
@@ -760,8 +762,13 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
             dataFields.add(new GDCSectionTitleDataField(getActivity(), res.getString(R.string.observation_environment_section_title)));
 
             WebfaunaRealmValue environmentDefaultValue = mCurrentWebfaunaObservation.getEnvironmentRealmValue();
+            //ArrayList<ULOneFieldListItemModel> environmentListElements = ULOneFieldListItemModel.getListWithItemData(DataDispatcher.getInstantce().getEnvironmentRealm().getRealmValues());
+            //mEnvironmentField = new GDCListDataField(getActivity(), environment_data_field_id, res.getString(R.string.observation_environment_title), environmentListElements, environmentDefaultValue, true, ListView.CHOICE_MODE_SINGLE);
+            mEnvironmentField = new GDCListDataField(getActivity(), environment_data_field_id, res.getString(R.string.observation_environment_title), new ArrayList<ULListItemModel>(), environmentDefaultValue, true, ListView.CHOICE_MODE_SINGLE);
+
             ArrayList<ULOneFieldListItemModel> environmentListElements = ULOneFieldListItemModel.getListWithItemData(DataDispatcher.getInstantce().getEnvironmentRealm().getRealmValues());
-            mEnvironmentField = new GDCListDataField(getActivity(), environment_data_field_id, res.getString(R.string.observation_environment_title), environmentListElements, environmentDefaultValue, true, ListView.CHOICE_MODE_SINGLE);
+            mEnvironmentField.setListItems(environmentListElements);
+
             dataFields.add(mEnvironmentField);
 
             WebfaunaRealmValue milieuDefaultValue = mCurrentWebfaunaObservation.getMilieuRealmValue();

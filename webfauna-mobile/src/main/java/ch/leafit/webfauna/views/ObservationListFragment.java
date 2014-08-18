@@ -86,6 +86,8 @@ public class ObservationListFragment extends BaseFragment implements PostObserva
             public void onClick(View v) {
                 mBtnDeselectAll.setVisibility(View.VISIBLE);
                 v.setVisibility(View.INVISIBLE);
+
+                mListAdapter.selectAll();
             }
         });
 
@@ -94,6 +96,8 @@ public class ObservationListFragment extends BaseFragment implements PostObserva
             public void onClick(View v) {
                 mBtnSelectAll.setVisibility(View.VISIBLE);
                 v.setVisibility(View.INVISIBLE);
+
+                mListAdapter.unselectAll();
             }
         });
 
@@ -440,5 +444,19 @@ public class ObservationListFragment extends BaseFragment implements PostObserva
 
         }
 
+        public void selectAll() {
+            for(WebfaunaObservation.WebfaunaObservationULListDataModel listItem : mListItems) {
+                listItem.setIsSelected(true);
+            }
+
+            this.notifyDataSetChanged();
+        }
+
+        public void unselectAll() {
+            for(WebfaunaObservation.WebfaunaObservationULListDataModel listItem : mListItems) {
+                listItem.setIsSelected(false);
+            }
+            this.notifyDataSetChanged();
+        }
     }
 }
