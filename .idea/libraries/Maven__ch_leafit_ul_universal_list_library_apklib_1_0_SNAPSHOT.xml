@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: ch.leafit.ul:universal-list-library:apklib:1.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/ch/leafit/ul/universal-list-library/1.0-SNAPSHOT/universal-list-library-1.0-SNAPSHOT.apklib!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/ch/leafit/ul/universal-list-library/1.0-SNAPSHOT/universal-list-library-1.0-SNAPSHOT-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/ch/leafit/ul/universal-list-library/1.0-SNAPSHOT/universal-list-library-1.0-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

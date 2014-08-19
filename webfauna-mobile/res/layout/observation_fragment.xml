@@ -11,7 +11,8 @@
                   android:layout_width="match_parent"
                   android:layout_height="match_parent"
                   android:id="@+id/lstMain"
-                  android:descendantFocusability="beforeDescendants">
+                android:focusable="false"
+                android:focusableInTouchMode="false"></ListView>
+                  <!--android:descendantFocusability="beforeDescendants"-->
 
-        </ListView>
 </LinearLayout>

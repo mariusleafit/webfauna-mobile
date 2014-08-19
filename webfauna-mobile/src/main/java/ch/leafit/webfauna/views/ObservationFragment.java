@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import ch.leafit.gdc.*;
 import ch.leafit.gdc.callback.GDCClickDataFieldCallback;
@@ -680,7 +682,7 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
             dataFieldsToHide.add(files_section_field_id);
             dataFieldsToHide.add(files_data_field_id);
 
-            //species-section
+        //species-section
             dataFields.add(new GDCSectionTitleDataField(getActivity(), res.getString(R.string.observation_species_section_title)));
 
         /*group*/
@@ -692,6 +694,8 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
                 mGroupField.setMarking(GDCDataField.GDCDataFieldMarking.MARKED_AS_INVALID);
             }
             dataFields.add(mGroupField);
+
+
 
 
 
@@ -788,8 +792,17 @@ public class ObservationFragment extends BaseFragment implements LocationDialogF
         }
 
         /*create listadapter*/
-        mListAdapter = new GDCHideableListAdapter(dataFields, dataFieldsToHide);
+        //mListAdapter = new GDCHideableListAdapter(dataFields, dataFieldsToHide);
+        mListAdapter = new GDCHideableListAdapter(dataFields, new ArrayList<Integer>());
         mListView.setAdapter(mListAdapter);
+
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.i("asdasdf","asdasdfasd!!!!!!!!!!!!!!");
+                view.callOnClick();
+            }
+        });
     }
 
     /*LocationDialogFragment.Callback*/
